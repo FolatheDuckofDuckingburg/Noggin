@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communication Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    * {
+      font-family: 'Nunito', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-wrapper {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+      overflow-y: auto;
+    }
+
+    .noggin-blue {
+      background-color: #2d8cff;
+      color: white;
+    }
+
+    .noggin-blue-text {
+      color: #2d8cff;
+    }
+
+    .button-word {
+      min-height: 80px;
+      min-width: 80px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .button-word:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(45, 140, 255, 0.25);
+    }
+
+    .button-word:focus {
+      outline: 4px dashed #2d8cff;
+      outline-offset: 4px;
+    }
+
+    .button-word:active {
+      transform: scale(0.98);
+    }
+
+    .category-tab {
+      padding: 12px 20px;
+      font-weight: 600;
+      border: none;
+      background: white;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .category-tab.active {
+      background-color: #2d8cff;
+      color: white;
+    }
+
+    .category-tab:focus {
+      outline: 3px dashed #2d8cff;
+      outline-offset: 2px;
+    }
+
+    .speech-bubble {
+      background: white;
+      border: 3px solid #2d8cff;
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .word-chip {
+      background-color: #e6f2ff;
+      color: #2d8cff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .speak-button {
+      min-height: 60px;
+      font-size: 18px;
+      font-weight: 700;
+      background-color: #2d8cff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0 24px;
+    }
+
+    .speak-button:hover {
+      background-color: #1970d6;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(45, 140, 255, 0.3);
+    }
+
+    .speak-button:focus {
+      outline: 4px dashed #2d8cff;
+      outline-offset: 4px;
+    }
+
+    .speak-button:active {
+      transform: translateY(0);
+    }
+
+    .speak-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-wrapper p-6">
+   <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-6">
+     <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full noggin-blue flex items-center justify-center text-2xl">
+       🧠
+      </div>
+      <h1 class="text-3xl font-bold noggin-blue-text" id="board-title">Communication Board</h1>
+     </div>
+     <p class="text-gray-600 font-medium" id="instructions">Tap words to speak</p>
+    </div><!-- Speech Display -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+     <label for="message-display" class="block text-sm font-semibold text-gray-700 mb-3">Your Message:</label>
+     <div class="speech-bubble" id="message-display" role="status" aria-live="polite" aria-label="Your current message">
+      <span class="text-gray-400">Tap words below to build your message</span>
+     </div>
+    </div><!-- Controls -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+     <div class="flex gap-3 flex-wrap">
+      <button class="speak-button" id="speak-btn" aria-label="Speak your message aloud"> 🔊 Speak </button> <button class="speak-button" id="clear-btn" style="background-color: #666;" aria-label="Clear the message"> 🗑️ Clear </button>
+     </div>
+    </div><!-- Category Tabs -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+     <div class="flex gap-2 mb-6 flex-wrap overflow-x-auto" role="tablist">
+      <button class="category-tab active" data-category="greetings" role="tab" aria-selected="true" aria-label="Greetings">👋 Greetings</button> <button class="category-tab" data-category="feelings" role="tab" aria-selected="false" aria-label="Feelings">😊 Feelings</button> <button class="category-tab" data-category="needs" role="tab" aria-selected="false" aria-label="Needs">🤔 Needs</button> <button class="category-tab" data-category="questions" role="tab" aria-selected="false" aria-label="Questions">❓ Questions</button> <button class="category-tab" data-category="actions" role="tab" aria-selected="false" aria-label="Actions">🎯 Actions</button> <button class="category-tab" data-category="people" role="tab" aria-selected="false" aria-label="People">👥 People</button> <button class="category-tab" data-category="places" role="tab" aria-selected="false" aria-label="Places">🗺️ Places</button> <button class="category-tab" data-category="objects" role="tab" aria-selected="false" aria-label="Objects">📦 Objects</button>
+     </div><!-- Word Grid -->
+     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="words-grid">
+      <!-- Words will be inserted here -->
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const categories = {
+      greetings: [
+        { word: 'Hello', emoji: '👋' },
+        { word: 'Hi', emoji: '😊' },
+        { word: 'Bye', emoji: '👋' },
+        { word: 'Good morning', emoji: '🌅' },
+        { word: 'Good afternoon', emoji: '☀️' },
+        { word: 'Good evening', emoji: '🌆' },
+        { word: 'Good night', emoji: '🌙' },
+        { word: 'Welcome', emoji: '🎉' },
+        { word: 'Thank you', emoji: '🙏' },
+        { word: 'Please', emoji: '🤲' },
+        { word: 'See you later', emoji: '👋' },
+        { word: 'Have a good day', emoji: '☀️' }
+      ],
+      feelings: [
+        { word: 'Happy', emoji: '😊' },
+        { word: 'Sad', emoji: '😢' },
+        { word: 'Excited', emoji: '🤩' },
+        { word: 'Angry', emoji: '😠' },
+        { word: 'Frustrated', emoji: '😤' },
+        { word: 'Tired', emoji: '😴' },
+        { word: 'Scared', emoji: '😨' },
+        { word: 'Calm', emoji: '😌' },
+        { word: 'Confused', emoji: '🤔' },
+        { word: 'Proud', emoji: '🦁' },
+        { word: 'Lonely', emoji: '😔' },
+        { word: 'Loved', emoji: '💕' }
+      ],
+      needs: [
+        { word: 'I need water', emoji: '💧' },
+        { word: 'I need help', emoji: '🆘' },
+        { word: 'I need rest', emoji: '🛏️' },
+        { word: 'I am hungry', emoji: '🍎' },
+        { word: 'I am thirsty', emoji: '🥤' },
+        { word: 'I need a break', emoji: '⏸️' },
+        { word: 'I need the bathroom', emoji: '🚽' },
+        { word: 'Can I go outside', emoji: '🌳' },
+        { word: 'I need a hug', emoji: '🤗' },
+        { word: 'I need quiet time', emoji: '🤫' },
+        { word: 'I am cold', emoji: '❄️' },
+        { word: 'I am hot', emoji: '🔥' }
+      ],
+      questions: [
+        { word: 'Can I...', emoji: '❓' },
+        { word: 'Where is...', emoji: '🗺️' },
+        { word: 'What is...', emoji: '🤔' },
+        { word: 'Who is...', emoji: '👤' },
+        { word: 'When is...', emoji: '⏰' },
+        { word: 'Why', emoji: '❔' },
+        { word: 'How do I...', emoji: '🛠️' },
+        { word: 'Is it time for...', emoji: '⏱️' },
+        { word: 'What time is it', emoji: '🕐' },
+        { word: 'What day is it', emoji: '📅' },
+        { word: 'Who wants to...', emoji: '🙋' },
+        { word: 'What happened', emoji: '📺' }
+      ],
+      actions: [
+        { word: 'Play', emoji: '🎮' },
+        { word: 'Read', emoji: '📖' },
+        { word: 'Write', emoji: '✏️' },
+        { word: 'Draw', emoji: '🎨' },
+        { word: 'Sing', emoji: '🎵' },
+        { word: 'Jump', emoji: '⛹️' },
+        { word: 'Run', emoji: '🏃' },
+        { word: 'Walk', emoji: '🚶' },
+        { word: 'Dance', emoji: '💃' },
+        { word: 'Eat', emoji: '🍽️' },
+        { word: 'Drink', emoji: '🥛' },
+        { word: 'Sleep', emoji: '😴' }
+      ],
+      people: [
+        { word: 'Mom', emoji: '👩' },
+        { word: 'Dad', emoji: '👨' },
+        { word: 'Sister', emoji: '👧' },
+        { word: 'Brother', emoji: '👦' },
+        { word: 'Grandma', emoji: '👵' },
+        { word: 'Grandpa', emoji: '👴' },
+        { word: 'Teacher', emoji: '👨‍🏫' },
+        { word: 'Friend', emoji: '👫' },
+        { word: 'Me', emoji: '🫵' },
+        { word: 'You', emoji: '👉' },
+        { word: 'Everyone', emoji: '👥' },
+        { word: 'Nobody', emoji: '🚫' }
+      ],
+      places: [
+        { word: 'Home', emoji: '🏠' },
+        { word: 'School', emoji: '🏫' },
+        { word: 'Park', emoji: '🎠' },
+        { word: 'Library', emoji: '📚' },
+        { word: 'Playground', emoji: '🛝' },
+        { word: 'Bathroom', emoji: '🚽' },
+        { word: 'Kitchen', emoji: '🍳' },
+        { word: 'Bedroom', emoji: '🛏️' },
+        { word: 'Garden', emoji: '🌻' },
+        { word: 'Beach', emoji: '🏖️' },
+        { word: 'Classroom', emoji: '🎓' },
+        { word: 'Gym', emoji: '🏋️' }
+      ],
+      objects: [
+        { word: 'Book', emoji: '📖' },
+        { word: 'Pencil', emoji: '✏️' },
+        { word: 'Toy', emoji: '🧸' },
+        { word: 'Ball', emoji: '⚽' },
+        { word: 'Bike', emoji: '🚲' },
+        { word: 'Computer', emoji: '💻' },
+        { word: 'Phone', emoji: '📱' },
+        { word: 'Tablet', emoji: '📱' },
+        { word: 'Snack', emoji: '🍪' },
+        { word: 'Drink', emoji: '🥤' },
+        { word: 'Picture', emoji: '🖼️' },
+        { word: 'Music', emoji: '🎵' }
+      ]
+    };
+
+    let selectedWords = [];
+    let currentCategory = 'greetings';
+    let config = {
+      board_title: 'Communication Board',
+      instructions: 'Tap words to speak'
+    };
+
+    const defaultConfig = {
+      board_title: 'Communication Board',
+      instructions: 'Tap words to speak'
+    };
+
+    function renderWords() {
+      const grid = document.getElementById('words-grid');
+      grid.innerHTML = '';
+      
+      const words = categories[currentCategory];
+      words.forEach(item => {
+        const button = document.createElement('button');
+        button.className = 'button-word';
+        button.style.backgroundColor = getColorForCategory(currentCategory);
+        button.innerHTML = `<span style="font-size: 32px;">${item.emoji}</span><span>${item.word}</span>`;
+        button.setAttribute('aria-label', `Select ${item.word}`);
+        button.onclick = () => addWord(item.word);
+        grid.appendChild(button);
+      });
+    }
+
+    function getColorForCategory(cat) {
+      const colors = {
+        greetings: '#FFB84D',
+        feelings: '#FF6B9D',
+        needs: '#4ECDC4',
+        questions: '#95E1D3',
+        actions: '#A8E6CF',
+        people: '#C7B3E5',
+        places: '#FFB3BA',
+        objects: '#FFDFBA'
+      };
+      return colors[cat];
+    }
+
+    function addWord(word) {
+      selectedWords.push(word);
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById('message-display');
+      if (selectedWords.length === 0) {
+        display.innerHTML = '<span class="text-gray-400">Tap words below to build your message</span>';
+      } else {
+        display.innerHTML = selectedWords.map(w => `<span class="word-chip">${w}</span>`).join('');
+      }
+    }
+
+    function speak() {
+      if (selectedWords.length === 0) return;
+      const text = selectedWords.join(' ');
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      speechSynthesis.speak(utterance);
+    }
+
+    function clear() {
+      selectedWords = [];
+      updateDisplay();
+    }
+
+    function switchCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-tab').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      document.querySelector(`[data-category="${cat}"]`).classList.add('active');
+      document.querySelector(`[data-category="${cat}"]`).setAttribute('aria-selected', 'true');
+      renderWords();
+    }
+
+    function onConfigChange(newConfig) {
+      config = newConfig;
+      document.getElementById('board-title').textContent = config.board_title || defaultConfig.board_title;
+      document.getElementById('instructions').textContent = config.instructions || defaultConfig.instructions;
+    }
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (cfg) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (cfg) => new Map([
+          ['board_title', cfg.board_title || defaultConfig.board_title],
+          ['instructions', cfg.instructions || defaultConfig.instructions]
+        ])
+      });
+    }
+
+    // Event listeners
+    document.getElementById('speak-btn').addEventListener('click', speak);
+    document.getElementById('clear-btn').addEventListener('click', clear);
+    document.querySelectorAll('.category-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchCategory(btn.dataset.category));
+    });
+
+    // Initialize
+    renderWords();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dca542912d93eac',t:'MTc3MzU2NTIzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
