@@ -1,16 +1,16 @@
-# Noggin 🎓🎨
+# Noggin 
 
-> **Real-time adaptive learning and sensory-friendly interactive lessons for special education.**
+> **Learning that Adapts to You**
 
 [![GitHub license](https://shields.io)](https://github.com)
 [![GitHub stars](https://shields.io)](https://github.com)
 [![Sponsor Noggin](https://shields.io)](https://github.com)
 
-Traditional EdTech leaves special needs students behind with overwhelming visuals, high costs, and rigid structures. 
+Traditional EdTech leaves special needs students behind with no understanding of school subjects, high costs, and rigid structures. 
 
 **Noggin** is a 100% free, open-source web application built to change that. Using serverless AI and real-time adaptive logic, it actively shapes interfaces and lessons to match each student's unique cognitive, sensory, and motor profiles.
 
-[🌐 Launch Live Application](https://vercel.app) <!-- Replace with your actual Vercel deployment URL -->
+[🌐 Launch Live Application](https://vercel.app)
 
 ---
 
