@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Brain, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import MemoryMatch from "../components/games/MemoryMatch";
-import SpellingBee from "../components/games/SpellingBee";
-import NumberPop from "../components/games/NumberPop";
-import WordScramble from "../components/games/WordScramble";
+import MemoryMatch from "@/src/components/games/MemoryMatch";
+import SpellingBee from "@/src/components/games/SpellingBee";
+import NumberPop from "@/src/components/games/NumberPop";
+import WordScramble from "@/src/components/games/WordScramble";
 
 const games = [
   {
