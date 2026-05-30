@@ -10,9 +10,11 @@ Traditional EdTech leaves special needs students behind with no understanding of
 
 **Noggin** is a 100% free, open-source web application built to change that. Using serverless AI and real-time adaptive logic, it actively shapes interfaces and lessons to match each student's unique cognitive, sensory, and motor profiles.
 
-[🌐 Launch Live Application](https://vercel.app)
+[🌐 Launch Live Application](https://folatheduckofduckingburg.github.io/Noggin)
 
 ---
+
+
 
 ## 💖 Support Our Mission via GitHub Sponsors
 
@@ -65,7 +67,7 @@ Set up your local environment in minutes.
 ### Installation
 ```bash
 # Clone repository
-git clone https://github.com
+git clone https://github.com/FolatheDuckofDuckingburg/Noggin
 
 # Enter folder
 cd Noggin
