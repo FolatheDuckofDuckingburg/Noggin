@@ -161,6 +161,18 @@
   <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6" id="gameContainer"></div>
 </div>
 
+
+    <div class="flex gap-3 mb-4">
+      <input id="spellIn" type="text" placeholder="Type the word..." autofocus
+        onkeydown="if(event.key==='Enter')checkSpelling()"
+        class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 text-lg font-bold text-center focus:outline-none focus:border-amber-400" />
+      <button onclick="checkSpelling()" class="btn bg-amber-500 text-white font-black px-5 rounded-xl">✓</button>
+    </div>` : ''}
+    <button onclick="nextSpellWord()" ${phase==='showing'?'disabled':''} class="btn w-full ${phase==='idle'?'bg-amber-500 text-white':'bg-white border-2 border-gray-200 text-gray-700'} font-black py-3 rounded-xl ${phase==='showing'?'opacity-50 cursor-not-allowed':''}">
+      ↺ ${phase==='idle'?'Start Game':'Next Word'}
+    </button>`;
+}
+
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const wordPairs = [
@@ -196,10 +208,6 @@ const emotionData = [
   {scenario:"You have to speak in front of the whole class tomorrow.",emotion:"Nervous",emoji:"😰",options:["Excited","Nervous","Proud","Sleepy"]},
   {scenario:"Someone took your favourite toy without asking.",emotion:"Angry",emoji:"😠",options:["Happy","Calm","Angry","Surprised"]},
   {scenario:"You finished a really hard puzzle all by yourself!",emotion:"Proud",emoji:"😄",options:["Sad","Tired","Proud","Confused"]},
-  {scenario:"You hear a very loud, unexpected noise.",emotion:"Scared",emoji:"😨",options:["Bored","Happy","Scared","Silly"]},
-  {scenario:"Your favourite show was cancelled after waiting all day.",emotion:"Disappointed",emoji:"😞",options:["Excited","Disappointed","Angry","Surprised"]},
-  {scenario:"You get to go to the beach tomorrow!",emotion:"Excited",emoji:"🤩",options:["Excited","Nervous","Sad","Bored"]},
-  {scenario:"Your pet is unwell and you can't help them.",emotion:"Sad",emoji:"😢",options:["Happy","Confused","Sad","Proud"]},
 ];
 
 const triviaFacts = [
@@ -207,15 +215,12 @@ const triviaFacts = [
   {fact:"Spiders have 6 legs.",answer:false,why:"Spiders have 8 legs!"},
   {fact:"Water is made of hydrogen and oxygen.",answer:true},
   {fact:"Whales are fish.",answer:false,why:"Whales are mammals!"},
-  {fact:"The moon makes its own light.",answer:false,why:"The moon reflects sunlight!"},
-  {fact:"Plants make food using sunlight.",answer:true},
-  {fact:"A caterpillar turns into a butterfly.",answer:true},
-  {fact:"Humans have 206 bones.",answer:true},
-  {fact:"Jupiter is the largest planet in our solar system.",answer:true},
-  {fact:"Sound travels faster than light.",answer:false,why:"Light travels much faster!"},
-  {fact:"Bats are completely blind.",answer:false,why:"Bats can see, they also use echolocation!"},
-  {fact:"Penguins live in Antarctica.",answer:true},
 ];
+
+// ── GLOBAL GAMIFICATION STATE ─────────────────────────────────────────────────
+let globalXP = 0;
+let globalLevel = 1;
+const xpPerLevel = 100;
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let gameState = {};
@@ -224,7 +229,7 @@ let gameState = {};
 function startGame(game) {
   document.getElementById('gameSelect').classList.add('hidden');
   document.getElementById('gameScreen').classList.remove('hidden');
-  gameState = { type: game, score: 0, streak: 0 };
+  gameState = { type: game, score: 0, streak: 0, level: 1 };
   renderGame(game);
 }
 
@@ -233,21 +238,92 @@ function backToMenu() {
   document.getElementById('gameSelect').classList.remove('hidden');
 }
 
-function renderGame(game) {
-  const names = {math:'Math Flash',word:'Word Match',memory:'Memory Match',
-    spelling:'Spelling Bee',pattern:'Pattern Master',emotion:'Emotion Explorer',truefalse:'True or False',matchtime:'Match the Time',numberguess:'Number Guess',colormatch:'Color Match'};
-  const icons = {math:'🔢',word:'📖',memory:'🧠',spelling:'🐝',pattern:'🔮',emotion:'😊',truefalse:'🧪', matchtime:'⏰',numberguess:'🔢',colormatch:'🎨'};
+// ── GAMIFICATION ENGINES (XP & HUD) ──────────────────────────────────────────
+function awardXP(amount) {
+  globalXP += amount;
+  let leveledUp = false;
+  if (globalXP >= globalLevel * xpPerLevel) {
+    globalXP -= (globalLevel * xpPerLevel);
+    globalLevel++;
+    leveledUp = true;
+  }
+  return leveledUp;
+}
 
-  const colors = {math:'text-blue-600',word:'text-purple-600',memory:'text-green-600',
-    spelling:'text-amber-600',pattern:'text-pink-600',emotion:'text-orange-600',truefalse:'text-cyan-600', matchtime: 'text-red-600', numberguess:'text-yellow-600', colormatch:'text-pink-600'};
+function getHUDHtml(colorClass) {
+  const currentMaxXp = globalLevel * xpPerLevel;
+  const xpPercentage = Math.min((globalXP / currentMaxXp) * 100, 100);
+  
+  return `
+    <div class="bg-gray-900 text-white rounded-xl p-4 mb-6 shadow-md border-b-4 border-gray-950">
+      <div class="flex justify-between items-center mb-2">
+        <div class="flex items-center gap-2">
+          <span class="bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 font-black px-2.5 py-0.5 rounded-md text-xs tracking-wider">LVL ${globalLevel}</span>
+          <span class="text-xs font-bold text-gray-400">${globalXP} / ${currentMaxXp} XP</span>
+        </div>
+        <div class="text-right">
+          <span class="font-black text-amber-400 text-sm">🔥 Score: ${gameState.score}</span>
+        </div>
+      </div>
+      <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+        <div class="bg-gradient-to-r from-yellow-400 to-amber-400 h-full transition-all duration-300" style="width: ${xpPercentage}%"></div>
+      </div>
+      ${gameState.streak > 1 ? `
+        <div class="mt-2 flex items-center justify-center gap-1.5 animate-bounce">
+          <span class="text-lg">⚡</span>
+          <span class="text-xs font-black bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text uppercase tracking-widest">${gameState.streak}x COMBO MULTIPLIER!</span>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function processAnswer(isCorrect, xpReward, nextRenderFunc) {
+  const body = document.getElementById('gameBody');
+  
+  if (isCorrect) {
+    gameState.streak = (gameState.streak || 0) + 1;
+    const finalXp = xpReward * (gameState.streak > 1 ? gameState.streak : 1);
+    gameState.score += finalXp;
+    const leveled = awardXP(finalXp);
+    
+    body.innerHTML = `
+      <div class="text-center py-12 correct-flash rounded-2xl border-4 border-green-400 transform scale-105 transition-all">
+        <div class="text-6xl mb-3 animate-bounce">✨🏆✨</div>
+        <h3 class="text-3xl font-black text-green-700 mb-1">CRUSHED IT!</h3>
+        <p class="text-xl font-bold text-green-600">+${finalXp} XP Generated</p>
+        ${leveled ? `<p class="text-2xl font-black text-purple-600 uppercase tracking-widest mt-3 animate-pulse">🚀 LEVEL UP! 🚀</p>` : ''}
+      </div>
+    `;
+  } else {
+    gameState.streak = 0;
+    body.innerHTML = `
+      <div class="text-center py-12 wrong-flash rounded-2xl border-4 border-red-400">
+        <div class="text-6xl mb-3">💥</div>
+        <h3 class="text-2xl font-black text-red-700 mb-1">SHIELD DAMAGED!</h3>
+        <p class="text-gray-600 font-bold">Combo Multiplier Broken.</p>
+      </div>
+    `;
+  }
+  setTimeout(nextRenderFunc, 1200);
+}
+
+function renderGame(game) {
+  const names = {math:'Math Flash',word:'Word Match',memory:'Memory Match',spelling:'Spelling Bee',pattern:'Pattern Master',emotion:'Emotion Explorer',truefalse:'True or False',matchtime:'Match the Time',numberGuess:'Number Guess',colormatch:'Color Match'};
+  const icons = {math:'🔢',word:'📖',memory:'🧠',spelling:'🐝',pattern:'🔮',emotion:'😊',truefalse:'🧪', matchtime:'⏰',numberGuess:'🔢',colormatch:'🎨'};
+  const colors = {math:'text-blue-600',word:'text-purple-600',memory:'text-green-600',spelling:'text-amber-600',pattern:'text-pink-600',emotion:'text-orange-600',truefalse:'text-cyan-600', matchtime: 'text-red-600', numberGuess:'text-yellow-600', colormatch:'text-pink-600'};
+  
   const c = document.getElementById('gameContainer');
   c.innerHTML = `
-    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+    <div class="flex items-center gap-3 mb-4 pb-2 border-b border-gray-100">
       <span class="text-2xl">${icons[game]}</span>
       <h2 class="font-black text-xl ${colors[game]}">${names[game]}</h2>
     </div>
+    <div id="hudSpace"></div>
     <div id="gameBody"></div>
   `;
+  
+  updateHUD();
   if (game === 'math') renderMath();
   else if (game === 'word') renderWordMatch();
   else if (game === 'memory') renderMemory();
@@ -256,12 +332,18 @@ function renderGame(game) {
   else if (game === 'emotion') renderEmotion();
   else if (game === 'truefalse') renderTrueFalse();
   else if (game === 'matchtime') renderMatchTime();
-  else if (game === 'numberguess') renderNumberGuess();
+  else if (game === 'numberGuess') renderNumberGuess();
   else if (game === 'colormatch') renderColorMatch();
+}
+
+function updateHUD() {
+  const space = document.getElementById('hudSpace');
+  if (space) space.innerHTML = getHUDHtml();
 }
 
 // ── MATH FLASH ────────────────────────────────────────────────────────────────
 function renderMath() {
+  updateHUD();
   const ops = ['+','-','×'];
   const op = ops[Math.floor(Math.random()*ops.length)];
   let a = Math.floor(Math.random()*12)+1;
@@ -269,71 +351,70 @@ function renderMath() {
   if (op==='-' && b>a) {let t=a;a=b;b=t;}
   const ans = op==='+' ? a+b : op==='-' ? a-b : a*b;
   gameState.mathAns = ans;
-  const s = gameState.score, streak = gameState.streak||0;
+  
   document.getElementById('gameBody').innerHTML = `
-    <div class="flex justify-between mb-4">
-      <span class="font-bold text-gray-700">⭐ ${s} pts</span>
-      ${streak>1?`<span class="bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full text-sm">🔥 ${streak}x Streak!</span>`:''}
-    </div>
-    <div id="mathQ" class="text-5xl font-black text-gray-800 text-center py-10 bg-gray-50 rounded-2xl mb-5">${a} ${op} ${b} = ?</div>
+    <div class="text-4xl font-black text-gray-800 text-center py-8 bg-gray-50 border-2 border-gray-200 rounded-2xl mb-5 shadow-inner">${a} ${op} ${b} = ?</div>
     <div class="flex gap-3">
-      <input id="mathIn" type="number" placeholder="?" onkeydown="if(event.key==='Enter')checkMath()"
-        class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 text-xl font-bold text-center focus:outline-none focus:border-blue-400" autofocus />
-      <button onclick="checkMath()" class="btn bg-blue-500 text-white font-black px-5 rounded-xl">✓</button>
+      <input id="mathIn" type="number" placeholder="📥 Enter calculation..." onkeydown="if(event.key==='Enter')checkMath()"
+        class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 text-xl font-bold text-center focus:outline-none focus:border-blue-400 shadow-sm" autofocus />
+      <button onclick="checkMath()" class="btn bg-blue-500 text-white font-black px-6 rounded-xl shadow-md border-b-4 border-blue-700">SUBMIT</button>
     </div>
   `;
 }
 
 function checkMath() {
   const val = parseInt(document.getElementById('mathIn').value);
-  const q = document.getElementById('mathQ');
   if (isNaN(val)) return;
-  if (val === gameState.mathAns) {
-    gameState.score += 1 + (gameState.streak||0);
-    gameState.streak = (gameState.streak||0) + 1;
-    q.classList.add('correct-flash');
-    q.innerHTML += '<div class="text-2xl mt-2">✅</div>';
-  } else {
-    gameState.streak = 0;
-    q.classList.add('wrong-flash');
-    q.innerHTML += `<div class="text-lg mt-2 text-red-500">Answer: ${gameState.mathAns}</div>`;
-  }
-  setTimeout(renderMath, 900);
+  processAnswer(val === gameState.mathAns, 15, renderMath);
 }
 
 // ── WORD MATCH ────────────────────────────────────────────────────────────────
 function renderWordMatch() {
+  updateHUD();
   const pairs = wordPairs.slice(0,4);
   const words = pairs.map(p=>p.word);
   const matches = pairs.map(p=>p.match).sort(()=>Math.random()-.5);
   gameState.wordPairs = pairs;
   gameState.wordSelected = null;
   gameState.wordMatched = [];
-  gameState.wordScore = gameState.wordScore || 0;
 
-  function render() {
-    const done = gameState.wordMatched.length === pairs.length * 2;
-    document.getElementById('gameBody').innerHTML = done ? `
-      <div class="text-center py-8">
-        <div class="text-5xl mb-3">⭐</div>
-        <p class="text-2xl font-black text-gray-800 mb-2">Perfect Match!</p>
-        <p class="text-gray-500 mb-6">${gameState.wordScore} points scored!</p>
-        <button onclick="gameState.wordScore=0;gameState.wordMatched=[];render();" class="btn bg-purple-500 text-white font-black px-6 py-3 rounded-xl">↺ Play Again</button>
-      </div>` : `
-      <div class="flex justify-between mb-4">
-        <span class="font-bold text-gray-700">⭐ ${gameState.wordScore} pts</span>
-        <span class="text-sm text-gray-500 font-semibold">Match the synonyms!</span>
-      </div>
+  window.selectWord = function(item) {
+    if (gameState.wordMatched.includes(item)) return;
+    if (!gameState.wordSelected) { gameState.wordSelected = item; drawInterface(); return; }
+    if (gameState.wordSelected === item) { gameState.wordSelected = null; drawInterface(); return; }
+    
+    const pair = gameState.wordPairs.find(p =>
+      (p.word===gameState.wordSelected && p.match===item) ||
+      (p.match===gameState.wordSelected && p.word===item));
+      
+    if (pair) {
+      gameState.wordMatched.push(pair.word, pair.match);
+      awardXP(20);
+      gameState.score += 20;
+      gameState.wordSelected = null;
+      if(gameState.wordMatched.length === pairs.length * 2) {
+        processAnswer(true, 25, renderWordMatch);
+        return;
+      }
+    } else { 
+      gameState.wordSelected = item; 
+    }
+    drawInterface();
+  };
+
+  function drawInterface() {
+    updateHUD();
+    document.getElementById('gameBody').innerHTML = `
       <div class="grid grid-cols-2 gap-3">
         <div class="space-y-2">${words.map(w=>`
-          <button onclick="selectWord('${w}')" class="w-full rounded-xl py-3 px-4 font-bold text-sm border-2 transition-all ${
+          <button onclick="selectWord('${w}')" class="w-full rounded-xl py-3 px-4 font-black text-sm border-2 border-b-4 transition-all ${
             gameState.wordMatched.includes(w) ? 'bg-green-100 border-green-400 text-green-700' :
             gameState.wordSelected===w ? 'border-blue-500 bg-blue-50 text-blue-700' :
             'border-gray-200 bg-white text-gray-800 hover:border-purple-400'
           }">${w}</button>`).join('')}
         </div>
         <div class="space-y-2">${matches.map(m=>`
-          <button onclick="selectWord('${m}')" class="w-full rounded-xl py-3 px-4 font-bold text-sm border-2 transition-all ${
+          <button onclick="selectWord('${m}')" class="w-full rounded-xl py-3 px-4 font-black text-sm border-2 border-b-4 transition-all ${
             gameState.wordMatched.includes(m) ? 'bg-green-100 border-green-400 text-green-700' :
             gameState.wordSelected===m ? 'border-blue-500 bg-blue-50 text-blue-700' :
             'border-gray-200 bg-white text-gray-800 hover:border-purple-400'
@@ -341,58 +422,38 @@ function renderWordMatch() {
         </div>
       </div>`;
   }
-
-  window.selectWord = function(item) {
-    if (gameState.wordMatched.includes(item)) return;
-    if (!gameState.wordSelected) { gameState.wordSelected = item; render(); return; }
-    if (gameState.wordSelected === item) { gameState.wordSelected = null; render(); return; }
-    const pair = gameState.wordPairs.find(p =>
-      (p.word===gameState.wordSelected && p.match===item) ||
-      (p.match===gameState.wordSelected && p.word===item));
-    if (pair) {
-      gameState.wordMatched.push(pair.word, pair.match);
-      gameState.wordScore += 10;
-      gameState.wordSelected = null;
-    } else { gameState.wordSelected = item; }
-    render();
-  };
-  render();
+  drawInterface();
 }
 
 // ── MEMORY MATCH ──────────────────────────────────────────────────────────────
 function renderMemory() {
+  updateHUD();
   const all = [...emojiPairs,...emojiPairs].sort(()=>Math.random()-.5)
     .map((e,i)=>({id:i,emoji:e,flipped:false,matched:false}));
   gameState.memCards = all;
   gameState.memFlipped = [];
-  gameState.memMoves = 0;
   gameState.memMatches = 0;
   renderMemBoard();
 }
 
 function renderMemBoard() {
+  updateHUD();
   const cards = gameState.memCards;
-  const done = gameState.memMatches === emojiPairs.length;
-  document.getElementById('gameBody').innerHTML = done ? `
-    <div class="text-center py-8">
-      <div class="text-5xl mb-3">🎉</div>
-      <p class="text-2xl font-black text-gray-800 mb-2">You Win!</p>
-      <p class="text-gray-500 mb-6">Completed in ${gameState.memMoves} moves</p>
-      <button onclick="renderMemory()" class="btn bg-green-500 text-white font-black px-6 py-3 rounded-xl">↺ Play Again</button>
-    </div>` : `
-    <div class="flex justify-between mb-4 text-sm font-semibold text-gray-500">
-      <span>Moves: ${gameState.memMoves}</span>
-      <span>Matched: ${gameState.memMatches}/${emojiPairs.length}</span>
-    </div>
+  if (gameState.memMatches === emojiPairs.length) {
+    processAnswer(true, 40, renderMemory);
+    return;
+  }
+  
+  document.getElementById('gameBody').innerHTML = `
     <div class="grid grid-cols-4 gap-2">
       ${cards.map(c=>`
         <button onclick="flipMem(${c.id})"
-          class="aspect-square rounded-xl text-2xl border-2 font-bold transition-all ${
+          class="aspect-square rounded-xl text-2xl border-2 border-b-4 font-bold transition-all flip-card ${
             c.matched ? 'border-green-400 bg-green-50' :
             c.flipped ? 'border-blue-400 bg-blue-50' :
             'border-gray-200 bg-gray-100 hover:bg-gray-200'
           }">
-          ${(c.flipped||c.matched) ? c.emoji : '?'}
+          ${(c.flipped||c.matched) ? c.emoji : '❓'}
         </button>`).join('')}
     </div>`;
 }
@@ -404,7 +465,6 @@ window.flipMem = function(id) {
   gameState.memFlipped.push(id);
   renderMemBoard();
   if (gameState.memFlipped.length===2) {
-    gameState.memMoves++;
     const [a,b] = gameState.memFlipped.map(fid=>gameState.memCards.find(c=>c.id===fid));
     if (a.emoji===b.emoji) {
       a.matched=b.matched=true;
@@ -424,62 +484,45 @@ window.flipMem = function(id) {
 // ── SPELLING BEE ──────────────────────────────────────────────────────────────
 function renderSpelling() {
   gameState.spellPhase = 'idle';
-  gameState.spellScore = gameState.spellScore||0;
-  gameState.spellCorrect = gameState.spellCorrect||0;
   gameState.spellWord = '';
   showSpellingUI();
 }
 
 function showSpellingUI() {
+  updateHUD();
   const phase = gameState.spellPhase;
   const word = gameState.spellWord;
+  
   document.getElementById('gameBody').innerHTML = `
-    <div class="flex justify-between mb-5">
-      <span class="font-bold text-gray-700">⭐ ${gameState.spellScore} pts</span>
-      <span class="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">✓ ${gameState.spellCorrect} correct</span>
-    </div>
     <div class="flex items-start gap-3 mb-5">
-      <span class="text-3xl">🐝</span>
-      <div class="bg-blue-50 border border-blue-200 rounded-2xl rounded-tl-none px-4 py-3 flex-1">
-        <p class="text-sm font-bold text-blue-800" id="beeSpeech">
-          ${phase==='idle' ? 'Press Next Word to start!' :
-            phase==='showing' ? 'Memorise the word! ⏳' :
-            phase==='spelling' ? 'Now type it from memory!' :
-            gameState.spellFeedback==='correct' ? 'Amazing! You got it right! 🎉' :
-            `Oops! The word was "${word}". Try again!`}
+      <span class="text-3xl animate-bounce">🐝</span>
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl rounded-tl-none px-4 py-3 flex-1 shadow-sm">
+        <p class="text-sm font-black text-amber-800">
+          ${phase==='idle' ? 'Ready to decipher semantic structures? Hit initialize!' :
+            phase==='showing' ? 'STAY LOCKED IN! Memorize data sequence... ⏳' :
+            'Transmission ended! Reconstruct the exact vocabulary target:'}
         </p>
       </div>
     </div>
-    <div id="spellDisplay" class="rounded-2xl p-8 mb-5 text-center border-2 ${
-      phase==='showing' ? 'bg-blue-50 border-blue-300' :
-      gameState.spellFeedback==='correct' ? 'bg-green-50 border-green-300' :
-      gameState.spellFeedback==='wrong' ? 'bg-red-50 border-red-300' :
-      'bg-gray-50 border-gray-200'
-    }">
-      ${phase==='idle' ? '<p class="text-gray-400 font-black">Ready?</p>' : ''}
-      ${phase==='showing' ? `<p class="text-4xl font-black text-gray-800 tracking-widest">${word}</p><p id="cdNum" class="text-2xl font-black text-blue-500 mt-2">3</p>` : ''}
-      ${phase==='spelling' ? '<p class="text-xl font-black text-gray-800">Spell the word!</p>' : ''}
-      ${phase==='result' ? (gameState.spellFeedback==='correct'
-        ? '<p class="text-3xl font-black text-green-600">✓ Correct!</p>'
-        : `<p class="text-xl font-black text-red-500">The word was: <span class="text-2xl">${word}</span></p>`) : ''}
+    <div id="spellDisplay" class="rounded-2xl p-6 mb-5 text-center border-2 border-b-4 bg-gray-50 border-gray-200">
+      ${phase==='idle' ? '<p class="text-gray-400 font-black tracking-wide">SYSTEM READY</p>' : ''}
+      ${phase==='showing' ? `<p class="text-4xl font-black text-gray-800 tracking-widest uppercase">${word}</p><p id="cdNum" class="text-2xl font-black text-amber-500 mt-2">3</p>` : ''}
+      ${phase==='spelling' ? '<p class="text-xl font-black text-gray-400 animate-pulse">⌨️ INPUT BUFFER OPEN</p>' : ''}
     </div>
     ${phase==='spelling' ? `
     <div class="flex gap-3 mb-4">
-      <input id="spellIn" type="text" placeholder="Type the word..." autofocus
+      <input id="spellIn" type="text" placeholder="Type word from buffer memory..." autofocus
         onkeydown="if(event.key==='Enter')checkSpelling()"
         class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 text-lg font-bold text-center focus:outline-none focus:border-amber-400" />
-      <button onclick="checkSpelling()" class="btn bg-amber-500 text-white font-black px-5 rounded-xl">✓</button>
+      <button onclick="checkSpelling()" class="btn bg-amber-500 text-white font-black px-6 rounded-xl border-b-4 border-amber-700">SUBMIT</button>
     </div>` : ''}
-    <button onclick="nextSpellWord()" ${phase==='showing'?'disabled':''} class="btn w-full ${phase==='idle'?'bg-amber-500 text-white':'bg-white border-2 border-gray-200 text-gray-700'} font-black py-3 rounded-xl ${phase==='showing'?'opacity-50 cursor-not-allowed':''}">
-      ↺ ${phase==='idle'?'Start Game':'Next Word'}
-    </button>`;
+    ${phase==='idle' ? `<button onclick="nextSpellWord()" class="btn w-full bg-amber-500 text-white font-black py-3 rounded-xl border-b-4 border-amber-700">⚡ INITIALIZE SYSTEM</button>` : ''}`;
 }
 
 window.nextSpellWord = function() {
   const word = spellingWords[Math.floor(Math.random()*spellingWords.length)];
   gameState.spellWord = word;
   gameState.spellPhase = 'showing';
-  gameState.spellFeedback = null;
   showSpellingUI();
   let count = 3;
   const timer = setInterval(()=>{
@@ -497,316 +540,191 @@ window.nextSpellWord = function() {
 window.checkSpelling = function() {
   const val = document.getElementById('spellIn')?.value.trim().toLowerCase();
   if (!val) return;
-  if (val === gameState.spellWord) {
-    gameState.spellScore += 10;
-    gameState.spellCorrect++;
-    gameState.spellFeedback = 'correct';
-  } else {
-    gameState.spellFeedback = 'wrong';
-  }
-  gameState.spellPhase = 'result';
-  showSpellingUI();
+  processAnswer(val === gameState.spellWord, 30, renderSpelling);
 };
 
 // ── PATTERN MASTER ────────────────────────────────────────────────────────────
 function renderPattern() {
-  gameState.patScore = gameState.patScore||0;
+  updateHUD();
   const useNumber = Math.random() > 0.5;
-  let pat;
-  if (useNumber) {
-    pat = makeNumberPattern();
-    gameState.patCurrent = {seq: pat.seq, answer: pat.answer, choices: pat.choices};
-  } else {
-    const p = patternSets[Math.floor(Math.random()*patternSets.length)];
-    gameState.patCurrent = p;
-  }
+  let pat = useNumber ? makeNumberPattern() : patternSets[Math.floor(Math.random()*patternSets.length)];
+  gameState.patCurrent = pat;
 
-  const {seq,answer,choices} = gameState.patCurrent;
+  const {seq,choices} = pat;
   document.getElementById('gameBody').innerHTML = `
-    <div class="flex justify-between mb-5">
-      <span class="font-bold text-gray-700">⭐ ${gameState.patScore} pts</span>
-      <span class="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">What comes next?</span>
-    </div>
-    <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+    <div class="bg-gray-50 border-2 border-gray-100 rounded-2xl p-6 mb-6 shadow-inner">
       <div class="flex items-center justify-center gap-3 flex-wrap">
-        ${seq.map(s=>`<div class="w-14 h-14 rounded-xl bg-white border-2 border-gray-200 flex items-center justify-center text-2xl font-black shadow-sm">${s}</div>`).join('')}
-        <div class="w-14 h-14 rounded-xl border-2 border-dashed border-blue-400 flex items-center justify-center text-2xl font-black text-blue-400">?</div>
+        ${seq.map(s=>`<div class="w-14 h-14 rounded-xl bg-white border-2 border-b-4 border-gray-200 flex items-center justify-center text-2xl font-black shadow-sm">${s}</div>`).join('')}
+        <div class="w-14 h-14 rounded-xl border-2 border-dashed border-pink-400 bg-pink-50 flex items-center justify-center text-2xl font-black text-pink-500 animate-pulse">?</div>
       </div>
     </div>
     <div class="grid grid-cols-2 gap-3">
       ${choices.map(c=>`
         <button onclick="checkPattern('${c}')"
-          class="btn py-5 rounded-2xl text-2xl border-2 border-gray-200 bg-white font-bold hover:border-pink-400 hover:bg-pink-50 transition-all">
+          class="btn py-4 rounded-2xl text-2xl border-2 border-b-4 border-gray-200 bg-white font-black hover:border-pink-400 hover:bg-pink-50 transition-all">
           ${c}
         </button>`).join('')}
     </div>`;
 }
 
 window.checkPattern = function(choice) {
-  const correct = gameState.patCurrent.answer;
-  const btns = document.querySelectorAll('#gameBody button');
-  btns.forEach(b => {
-    if (b.textContent.trim() === correct) b.className = b.className.replace(/border-gray-200 bg-white hover:border-pink-400 hover:bg-pink-50/,'border-green-400 bg-green-50 text-green-700');
-    if (b.textContent.trim() === choice && choice !== correct) b.className = b.className.replace(/border-gray-200 bg-white hover:border-pink-400 hover:bg-pink-50/,'border-red-400 bg-red-50 text-red-500');
-  });
-  if (choice === correct) gameState.patScore += 10;
-  setTimeout(renderPattern, 1000);
+  processAnswer(choice === gameState.patCurrent.answer, 20, renderPattern);
 };
 
 // ── EMOTION EXPLORER ──────────────────────────────────────────────────────────
 function renderEmotion() {
-  gameState.emoScore = gameState.emoScore||0;
-  gameState.emoCorrect = gameState.emoCorrect||0;
-  gameState.emoTotal = gameState.emoTotal||0;
+  updateHUD();
   const cur = emotionData[Math.floor(Math.random()*emotionData.length)];
   gameState.emoCurrent = cur;
 
   document.getElementById('gameBody').innerHTML = `
-    <div class="flex justify-between mb-5">
-      <span class="font-bold text-gray-700">⭐ ${gameState.emoScore} pts</span>
-      <span class="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">✓ ${gameState.emoCorrect}/${gameState.emoTotal}</span>
-    </div>
-    <div class="bg-blue-50 rounded-2xl p-6 mb-6 text-center">
-      <div class="text-5xl mb-3">${cur.emoji}</div>
-      <p class="text-xs font-bold text-blue-500 uppercase tracking-wide mb-2">How would you feel?</p>
-      <p class="text-base font-bold text-gray-800 leading-snug">${cur.scenario}</p>
+    <div class="bg-orange-50 border-2 border-orange-100 rounded-2xl p-6 mb-6 text-center shadow-inner">
+      <div class="text-6xl mb-2 filter drop-shadow-md animate-bounce">${cur.emoji}</div>
+      <p class="text-sm font-black text-gray-800 leading-snug">${cur.scenario}</p>
     </div>
     <div class="grid grid-cols-2 gap-3">
       ${cur.options.map(opt=>`
         <button onclick="checkEmotion('${opt}')"
-          class="btn py-3 px-4 rounded-xl border-2 border-gray-200 bg-white font-bold text-sm text-gray-800 hover:border-orange-400 hover:bg-orange-50 transition-all">
+          class="btn py-3 px-4 rounded-xl border-2 border-b-4 border-gray-200 bg-white font-black text-sm text-gray-800 hover:border-orange-400 hover:bg-orange-50 transition-all">
           ${opt}
         </button>`).join('')}
     </div>`;
 }
 
 window.checkEmotion = function(choice) {
-  const correct = gameState.emoCurrent.emotion;
-  gameState.emoTotal++;
-  if (choice === correct) { gameState.emoScore += 10; gameState.emoCorrect++; }
-  const btns = document.querySelectorAll('#gameBody .grid button');
-  btns.forEach(b => {
-    if (b.textContent.trim() === correct) b.className += ' !border-green-400 !bg-green-50 !text-green-700';
-    if (b.textContent.trim() === choice && choice !== correct) b.className += ' !border-red-400 !bg-red-50 !text-red-500';
-  });
-  setTimeout(renderEmotion, 1000);
+  processAnswer(choice === gameState.emoCurrent.emotion, 15, renderEmotion);
 };
 
 // ── TRUE OR FALSE ─────────────────────────────────────────────────────────────
 function renderTrueFalse() {
-  gameState.tfScore = gameState.tfScore||0;
-  gameState.tfStreak = gameState.tfStreak||0;
-  gameState.tfTotal = gameState.tfTotal||0;
-  const cur = triviaFacts[Math.floor(Math.random()*triviaFacts.length)];
+  updateHUD();
+  const cur = triviaFacts[Math.floor(Math.random() * triviaFacts.length)];
   gameState.tfCurrent = cur;
 
   document.getElementById('gameBody').innerHTML = `
-    <div class="flex justify-between mb-5">
-      <span class="font-bold text-gray-700">⭐ ${gameState.tfScore} pts</span>
-      ${gameState.tfStreak>1?`<span class="bg-orange-100 text-orange-700 font-bold px-3 py-1 rounded-full text-sm">🔥 ${gameState.tfStreak}x</span>`:
-      `<span class="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">${gameState.tfTotal} answered</span>`}
+    <div id="tfQ" class="text-xl font-black text-gray-800 text-center py-8 bg-gray-50 border-2 border-gray-100 rounded-2xl mb-5 px-4 shadow-inner">
+      "${cur.fact}"
     </div>
-    <div class="bg-gray-50 rounded-2xl p-8 mb-6 text-center">
-      <div class="text-5xl mb-4">🧪</div>
-      <p class="text-xl font-black text-gray-800 leading-snug">${cur.fact}</p>
+    <div class="flex gap-4">
+      <button onclick="checkTrueFalse(true)" class="btn flex-1 bg-green-500 text-white font-black py-4 rounded-xl border-b-4 border-green-700 text-lg">👍 TRUE</button>
+      <button onclick="checkTrueFalse(false)" class="btn flex-1 bg-red-500 text-white font-black py-4 rounded-xl border-b-4 border-red-700 text-lg">👎 FALSE</button>
     </div>
-    <div class="grid grid-cols-2 gap-4">
-      <button onclick="checkTF(true)"
-        class="btn py-5 rounded-2xl border-2 border-green-300 bg-green-50 text-green-700 font-black text-xl hover:bg-green-100 transition-all">
-        ✓ TRUE
-      </button>
-      <button onclick="checkTF(false)"
-        class="btn py-5 rounded-2xl border-2 border-red-300 bg-red-50 text-red-600 font-black text-xl hover:bg-red-100 transition-all">
-        ✗ FALSE
-      </button>
-    </div>`;
+  `;
 }
 
-window.checkTF = function(choice) {
-  const cur = gameState.tfCurrent;
-  gameState.tfTotal++;
-  const correct = choice === cur.answer;
-  if (correct) {
-    gameState.tfScore += 10 + gameState.tfStreak;
-    gameState.tfStreak++;
-  } else {
-    gameState.tfStreak = 0;
-  }
-  const msg = correct ? '✅ Correct!' : (cur.answer ? '❌ That\'s actually TRUE!' : `❌ FALSE! ${cur.why||''}`);
-  const col = correct ? 'text-green-600' : 'text-red-500';
-  document.querySelector('#gameBody .bg-gray-50').innerHTML += `<p class="mt-4 font-black text-lg ${col}">${msg}</p>`;
-  document.querySelectorAll('#gameBody .grid button').forEach(b=>b.disabled=true);
-  setTimeout(renderTrueFalse, 1200);
-}
+window.checkTrueFalse = function(choice) {
+  processAnswer(choice === gameState.tfCurrent.answer, 15, renderTrueFalse);
+};
 
-// ── MATCH THE TIME ──────────────────────────────────────────────────────────────
+// ── MATCH THE TIME ────────────────────────────────────────────────────────────
 function renderMatchTime() {
-  gameContainer.innerHTML = '';
+  updateHUD();
+  const hours = Math.floor(Math.random() * 12) + 1;
+  const minutes = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+  const displayTime = `${hours}:${minutes === 0 ? '00' : minutes}`;
+  
+  const correctOption = displayTime;
+  const wrong1 = `${(hours % 12) + 1}:${minutes === 0 ? '00' : minutes}`;
+  const wrong2 = `${hours}:${minutes === 0 ? '30' : '00'}`;
+  const choices = [correctOption, wrong1, wrong2].sort(() => Math.random() - 0.5);
 
-  // Generate a random time
-  const hour = Math.floor(Math.random() * 12) + 1;
-  const minute = Math.random() < 0.5 ? 0 : 30;
-  const timeString = `${hour}:${minute === 0 ? '00' : '30'}`;
+  gameState.timeAnswer = correctOption;
 
-  // Store the correct answer in game state
-  gameState.correctTime = timeString;
-
-  // Create title and instructions
-  const title = document.createElement('h1');
-  title.className = 'text-4xl font-bold mb-4 text-center text-gray-800';
-  title.innerText = 'Match the Time';
-
-  const instructions = document.createElement('p');
-  instructions.className = 'mb-4 text-center text-gray-700';
-  instructions.innerText = 'Select the digital time that matches the clock shown below.';
-
-  // Create a canvas for the clock
-  const canvas = document.createElement('canvas');
-  canvas.width = 200;
-  canvas.height = 200;
-  canvas.className = 'mx-auto mb-4';
-
-  // Function to draw the clock
-  function drawClock() {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, 200, 200);
-
-    // Draw clock face
-    ctx.beginPath();
-    ctx.arc(100, 100, 90, 0, Math.PI * 2);
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fill();
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    // Draw hour hand
-    const hourAngle = ((hour % 12) + (minute/60)) * Math.PI / 6;
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = '#333';
-    ctx.beginPath();
-    ctx.moveTo(100, 100);
-    ctx.lineTo(100 + 50 * Math.sin(hourAngle), 100 - 50 * Math.cos(hourAngle));
-    ctx.stroke();
-
-    // Draw minute hand
-    const minuteAngle = (minute/60) * Math.PI * 2;
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#555';
-    ctx.beginPath();
-    ctx.moveTo(100, 100);
-    ctx.lineTo(100 + 70 * Math.sin(minuteAngle), 100 - 70 * Math.cos(minuteAngle));
-    ctx.stroke();
-
-    // Draw center
-    ctx.beginPath();
-    ctx.arc(100, 100, 5, 0, Math.PI * 2);
-    ctx.fillStyle = '#333';
-    ctx.fill();
-  }
-
-  drawClock();
-
-  // Generate options
-  const options = [
-    timeString,
-    `${(hour % 12) + 1}:${minute === 0 ? '00' : '30'}`,
-    `${hour}:${minute === 0 ? '15' : '15'}`,
-    `${(hour % 12) + 2}:${minute === 0 ? '00' : '30'}`
-  ];
-
-  // Shuffle options
-  for (let i = options.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [options[i], options[j]] = [options[j], options[i]];
-  }
-
-  // Create the game container
-  const container = document.createElement('div');
-
-  // Append all elements
-  container.appendChild(title);
-  container.appendChild(instructions);
-  container.appendChild(canvas);
-
-  const optionsContainer = document.createElement('div');
-  optionsContainer.className = 'flex flex-col gap-3 mt-4';
-
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.innerText = opt;
-    btn.className = 'w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded';
-    btn.onclick = () => {
-      if (opt === gameState.correctTime) {
-        alert('Correct! Great job.');
-        renderMatchTime(); // Restart
-      } else {
-        alert(`Oops! The correct time was ${gameState.correctTime}. Try again!`);
-        renderMatchTime();
-      }
-    };
-    optionsContainer.appendChild(btn);
-  });
-
-  container.appendChild(optionsContainer);
-  gameContainer.appendChild(container);
+  document.getElementById('gameBody').innerHTML = `
+    <div class="text-4xl font-black text-gray-800 text-center py-6 bg-gray-50 border-2 border-gray-100 rounded-2xl mb-6 shadow-inner">
+      ⏰ <div class="text-lg text-gray-500 mt-1">Locate Chrono-Target: <span class="text-red-500 font-black">${displayTime}</span></div>
+    </div>
+    <div class="grid grid-cols-3 gap-3">
+      ${choices.map(c => `
+        <button onclick="checkMatchTime('${c}')" class="btn py-3 rounded-xl border-2 border-b-4 border-gray-200 font-black bg-white text-gray-800 hover:border-red-400">
+          ${c}
+        </button>
+      `).join('')}
+    </div>
+  `;
 }
 
-// ── Number Guess ──────────────────────────────────────────────────────────────
+window.checkMatchTime = function(choice) {
+  processAnswer(choice === gameState.timeAnswer, 20, renderMatchTime);
+};
+
+// ── NUMBER GUESS ──────────────────────────────────────────────────────────────
 function renderNumberGuess() {
-  gameState.numberGuessAnswer = Math.floor(Math.random() * 100) + 1;
+  updateHUD();
+  if (!gameState.targetNum) {
+    gameState.targetNum = Math.floor(Math.random() * 20) + 1;
+    gameState.guessAttempts = 0;
+  }
+  
   document.getElementById('gameBody').innerHTML = `
-    <div class="mb-4 flex justify-between items-center">
-      <span class="font-bold text-gray-700">Guess a number between 1 and 100</span>
+    <div class="mb-4 text-center bg-yellow-50 border border-yellow-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-700 font-black">Decrypting numerical mainframe lock... (Range: 1 - 20)</p>
+      <div id="guessHint" class="text-base font-black text-yellow-600 mt-1 animate-pulse">INPUT VALUE BELOW</div>
     </div>
-    <div class="flex gap-3 mb-4">
-      <input id="numberGuessIn" type="number" placeholder="Your guess" autofocus
-        class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 text-xl font-bold text-center focus:outline-none focus:border-blue-400" />
-      <button onclick="checkNumberGuess()" class="btn bg-blue-500 text-white font-black px-5 rounded-xl">✓</button>
+    <div class="flex gap-3">
+      <input id="guessIn" type="number" placeholder="1-20" min="1" max="20"
+        onkeydown="if(event.key==='Enter')checkNumberGuess()"
+        class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 text-xl font-bold text-center focus:outline-none focus:border-yellow-400" autofocus />
+      <button onclick="checkNumberGuess()" class="btn bg-yellow-500 text-white font-black px-6 rounded-xl border-b-4 border-yellow-700">LOCK IN</button>
     </div>
   `;
 }
 
-function checkNumberGuess() {
-  const val = parseInt(document.getElementById('numberGuessIn').value);
+window.checkNumberGuess = function() {
+  const val = parseInt(document.getElementById('guessIn').value);
+  const hint = document.getElementById('guessHint');
   if (isNaN(val)) return;
-  if (val === gameState.numberGuessAnswer) {
-    alert(`Correct! The number was ${gameState.numberGuessAnswer}.`);
-  } else if (val < gameState.numberGuessAnswer) {
-    alert('Too low! Try again.');
-    renderNumberGuess();
+  
+  gameState.guessAttempts++;
+  
+  if (val === gameState.targetNum) {
+    gameState.targetNum = null;
+    processAnswer(true, 30, renderNumberGuess);
+  } else if (val < gameState.targetNum) {
+    hint.innerHTML = `📉 MATRIX VALUE IS HIGHER! (Attempts: ${gameState.guessAttempts})`;
+    hint.className = "text-base font-black text-blue-500 animate-bounce";
   } else {
-    alert('Too high! Try again.');
-    renderNumberGuess();
+    hint.innerHTML = `📈 MATRIX VALUE IS LOWER! (Attempts: ${gameState.guessAttempts})`;
+    hint.className = "text-base font-black text-red-500 animate-bounce";
   }
-}
+};
 
-// ── Color Match ───────────────────────────────────────────────────────────────
+// ── COLOR MATCH ───────────────────────────────────────────────────────────────
 function renderColorMatch() {
-  const colors = ['red','blue','green','yellow','purple','pink'];
-  const selectedColor = colors[Math.floor(Math.random()*colors.length)];
-  gameState.colorToMatch = selectedColor;
+  updateHUD();
+  const colorsList = [
+    { name: "Red", hex: "#ef4444" },
+    { name: "Blue", hex: "#3b82f6" },
+    { name: "Green", hex: "#22c55e" },
+    { name: "Yellow", hex: "#eab308" }
+  ];
+  
+  const targetWord = colorsList[Math.floor(Math.random() * colorsList.length)];
+  const displayColor = colorsList[Math.floor(Math.random() * colorsList.length)];
+  
+  gameState.colorAnswer = targetWord.name;
+
   document.getElementById('gameBody').innerHTML = `
-    <div class="mb-4 text-center">
-      <div class="w-24 h-24 mx-auto mb-4" style="background-color:${selectedColor}; border: 2px solid #333;"></div>
-      <p class="mb-4 font-semibold text-gray-700">Match the color shown above!</p>
-      <div class="flex flex-col gap-3">
-        ${colors.map(c => `
-          <button onclick="checkColorMatch('${c}')" class="w-full py-3 rounded-xl border border-gray-200 bg-white font-bold text-gray-800 hover:border-orange-400 hover:bg-orange-50 transition-all">${c}</button>
-        `).join('')}
-      </div>
+    <div class="text-center mb-4 bg-gray-50 py-2 border rounded-xl">
+      <span class="text-xs font-black text-gray-400 uppercase tracking-widest">STROOP FILTER ACTIVE: READ THE TEXT WORD!</span>
+    </div>
+    <div id="colorTarget" class="text-5xl font-black text-center py-8 bg-gray-900 rounded-2xl mb-6 shadow-md border-b-4 border-gray-950 tracking-wide select-none" style="color: ${displayColor.hex}">
+      ${targetWord.name}
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      ${colorsList.map(c => `
+        <button onclick="checkColorMatch('${c.name}')" class="btn py-4 rounded-xl border-2 border-b-4 border-gray-200 bg-white font-black text-gray-800 hover:border-pink-400">
+          ${c.name}
+        </button>
+      `).join('')}
     </div>
   `;
 }
 
-function checkColorMatch(color) {
-  if (color === gameState.colorToMatch) {
-    alert('Correct!');
-  } else {
-    alert(`Oops! The correct color was ${gameState.colorToMatch}.`);
-  }
-  renderColorMatch();
-}
+window.checkColorMatch = function(choice) {
+  processAnswer(choice === gameState.colorAnswer, 25, renderColorMatch);
+};
 </script>
 </body>
+</html>
 </html>
