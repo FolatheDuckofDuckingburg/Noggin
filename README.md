@@ -16,13 +16,18 @@ Traditional EdTech leaves special needs students behind with no understanding of
 
 
 
-## 💖 Support Our Mission via GitHub Sponsors
+## 💖 Support Our Mission 
 
-Noggin is and always will be free for classrooms, teachers, and parents. Development, hosting, and AI API costs are entirely community-funded. 
+Noggin is and always will be free for classrooms, teachers, and parents.
 
 If you believe in accessible education, please consider supporting us:
 *   🌟 **Star this repository** to help more educators discover us.
-*   💖 **Become a Sponsor** via [GitHub Sponsors](https://github.com) to fund our live AI processing layers.
+*   💖 **Sign up for Noggin Tutoring Services** (COMING SOON) to support our mission for free education for everyone.
+
+---
+## 🧠 Meet Noggimigo!
+Noggimigo is our built-in Python AI tutor designed specifically for special education students. 
+Instead of just giving away answers, it acts as a patient coach—asking friendly guiding questions, breaking down big topics, and using clear, encouraging words to help students learn at their own pace.
 
 ---
 
@@ -32,7 +37,7 @@ If you believe in accessible education, please consider supporting us:
 *   📈 **Real Adaptive Learning:** Automated difficulty adjustments based on user speed, accuracy, and error logs.
 *   🚫 **Zero Sensory Overload:** Dynamic layout changes minimize cognitive strain and eliminate flashing animations.
 *   ♿ **WCAG Compliant Options:** Built-in high-contrast modes, screen-reader support, and text-to-speech toggles.
-*   📱 **Touchscreen Optimized:** Large interface targets (minimum 80px) designed natively for classroom tablets.
+*   📱 **Touchscreen Optimized:** Large interface targets (minimum 80px) designed natively for classroom tablets (they're lucky they have tablets lol).
 
 ---
 
@@ -47,12 +52,9 @@ If you believe in accessible education, please consider supporting us:
 
 ## 🛠️ Production Tech Stack
 
-Noggin is optimized for seamless continuous deployment via Vercel.
-
 *   **Frontend & Core API:** Next.js (React) + TypeScript
 *   **Database & Auth:** Supabase / PostgreSQL (Tracking `Students` and `PerformanceLogs`)
-*   **AI Orchestration:** OpenAI API (Running foundational evaluation prompts)
-*   **Hosting Engine:** Fully deployed on Vercel Edge infrastructure
+*   **AI Orchestration:** Python (bc we're too broke for OpenAI)
 
 ---
 
