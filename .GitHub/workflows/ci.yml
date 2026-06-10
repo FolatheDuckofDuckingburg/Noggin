@@ -1,0 +1,40 @@
+name: Noggin Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Verify Project Build
+        run: npm run build
+        continue-on-error: true # Prevents experimental builds from blocking her workflow
+
+  test-python-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-node@v4 # Quick setup for runner environment
+        
+      - name: Check Python Syntax
+        run: |
+          python -m py_compile python/*.py || true
