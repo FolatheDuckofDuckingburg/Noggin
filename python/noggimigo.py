@@ -4,7 +4,7 @@ import urllib.parse
 def ask_noggimigo_tutor(conversation_history, new_message):
     url = "https://text.pollinations.ai/"
     
-    # Custom system instructions tailored strictly for the Noggin platform
+    # Custom system instructions tailored strictly for the Noggin platform (DO NOT COPY AND PASTE)
     system_rules = (
         "You are Noggimigo, a brilliant, patient, and kind AI tutor for special education students. "
         "CRITICAL RULE: Never just give the student the final answer right away! "

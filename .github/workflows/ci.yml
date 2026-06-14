@@ -24,7 +24,7 @@ jobs:
 
       - name: Verify Project Build
         run: npm run build
-        continue-on-error: true # Prevents experimental builds from blocking her workflow
+        continue-on-error: true # Prevents experimental builds from blocking the workflow
 
   test-python-ai:
     runs-on: ubuntu-latest
