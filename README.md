@@ -1,83 +1,90 @@
-# Noggin 
+# 🧠 Noggin 
 
 > **Learning that Adapts to You**
 
-[![GitHub license](https://shields.io)](https://github.com)
-[![GitHub stars](https://shields.io)](https://github.com)
-[![Sponsor Noggin](https://shields.io)](https://github.com)
+[![GitHub license](https://shields.io)](https://github.com/FolatheDuckofDuckingburg/Noggin)
+[![GitHub stars](https://shields.io)](https://github.com/FolatheDuckofDuckingburg/Noggin)
+[![Sponsor Noggin](https://shields.io)](https://github.com/FolatheDuckofDuckingburg/Noggin)
 
-Traditional EdTech leaves special needs students behind with no understanding of school subjects, high costs, and rigid structures. 
+Traditional EdTech often acts as an academic hurdle rather than a learning aid for special education students in unaccommodated settings. Without built-in accessibility, these rigid systems force neurodivergent or physically impaired learners to adapt to the software, frequently causing frustration, task abandonment, and widening performance gaps.
 
-**Noggin** is a 100% free, open-source web application built to change that. Using serverless AI and real-time adaptive logic, it actively shapes interfaces and lessons to match each student's unique cognitive, sensory, and motor profiles.
+**Noggin** is a 100% free, open-source web application built to change that. Using real-time adaptive logic and custom AI orchestration, it actively transforms interfaces and lessons to match each student's unique cognitive, sensory, and motor profiles.
 
 [🌐 Launch Live Application](https://folatheduckofduckingburg.github.io/Noggin)
 
 ---
 
-
-
 ## 💖 Support Our Mission 
 
-Noggin is and always will be free for classrooms, teachers, and parents.
+Noggin is and always will be free for classrooms, teachers, and parents. If you believe in democratizing accessible education, you can support us in two major ways:
 
-If you believe in accessible education, please consider supporting us:
-*   🌟 **Star this repository** to help more educators discover us.
-*   💖 **Sign up for Noggin Tutoring Services** (COMING SOON) to support our mission for free education for everyone.
-
----
-## 🧠 Meet Noggimigo!
-Noggimigo is our built-in Python AI tutor designed specifically for special education students. 
-Instead of just giving away answers, it acts as a patient coach—asking friendly guiding questions, breaking down big topics, and using clear, encouraging words to help students learn at their own pace.
+*   🌟 **Star this repository** to help more educators and special education advocates discover us.
+*   🚀 **Sign up for Noggin Tutoring Services** *(COMING SOON)* to directly fund our mission of keeping core classroom tools free for everyone.
 
 ---
 
-## 🧠 Core Features
+## ⚛️ Meet Noggimigo!
 
-*   🔒 **AI Assessment Gatekeeper:** Mandatory onboarding evaluation determines student baselines before unlocking content.
-*   📈 **Real Adaptive Learning:** Automated difficulty adjustments based on user speed, accuracy, and error logs.
-*   🚫 **Zero Sensory Overload:** Dynamic layout changes minimize cognitive strain and eliminate flashing animations.
-*   ♿ **WCAG Compliant Options:** Built-in high-contrast modes, screen-reader support, and text-to-speech toggles.
-*   📱 **Touchscreen Optimized:** Large interface targets (minimum 80px) designed natively for classroom tablets (they're lucky they have tablets lol).
+**Noggimigo** is our built-in, local Python AI tutor designed specifically for special education workflows. 
 
----
-
-## 🔄 The Adaptive Workflow
-
-1.  **Gatekeeper:** Student completes an onboarding assessment game mapping core abilities.
-2.  **Profiling:** App evaluates reaction speeds, input errors, and accessibility triggers.
-3.  **Database Sync:** Metrics instantly populate the student's unique profile schema.
-4.  **Tailored Delivery:** Lessons unlock with system styling completely optimized for that specific user.
+Unlike standard conversational models that hand out answers, Noggimigo acts as a patient, scaffolded coach. It asks friendly, guiding questions, breaks down complex topics into micro-concepts, and uses clear, encouraging language to help students learn at their own pace without cognitive fatigue.
 
 ---
 
 ## 🛠️ Production Tech Stack
 
-*   **Frontend & Core API:** Next.js (React) + TypeScript
-*   **Database & Auth:** Supabase / PostgreSQL (Tracking `Students` and `PerformanceLogs`)
-*   **AI Orchestration:** Python (bc we're too broke for OpenAI)
+Noggin is built using a modern, scalable, and highly performant split architecture:
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend & App Interface** | Next.js (React) + TypeScript | Handles lightning-fast, reactive state modifications and dynamic UI shifts. |
+| **Database & Auth Engine** | Supabase / PostgreSQL | Structured relational schema logging student baselines and active `PerformanceLogs`. |
+| **AI Orchestration Layer** | Python Serverless Scripts | Low-cost, highly optimized prompt mechanics powering Noggimigo's custom tuning logic. |
+
+---
+
+## 🎯 Core Features
+
+*   🔒 **AI Assessment Gatekeeper:** A mandatory onboarding evaluation game that maps student baselines across speed, input accuracy, and error types before unlocking core content.
+*   📈 **True Adaptive Pacing:** Automated micro-difficulty adjustments that scale based on live input tracking, response velocity, and error patterns.
+*   🚫 **Zero Sensory Overload:** Fluid interface layout transforms that actively minimize cognitive strain, strip complex hovering actions, and completely eliminate flashing animations.
+*   ♿ **WCAG-Compliant Engineering:** Native integration for high-contrast color matrices, screen-reader accessibility hooks, and single-tap text-to-speech toggles.
+*   📱 **Touchscreen Optimized Layouts:** Large interactive click and touch targets (minimum 80px) designed natively to accommodate motor challenges on standard classroom tablets.
+
+---
+
+## 🔄 The Adaptive Workflow
+
+```text
+ [1. Gatekeeper]      ➔      [2. Profiling]       ➔    [3. Database Sync]    ➔    [4. Tailored Delivery]
+Onboarding assessment       Tracks response speeds,     Metrics populate the       Lessons unlock with fully
+game maps student           input errors, and sensory   student's unique database  individualized UI styling 
+core abilities.             triggers dynamically.       profile schema.            and dynamic AI tracking.
+```
 
 ---
 
 ## 🚀 Quick Start for Developers
 
-Set up your local environment in minutes.
+Get your local development environment up and running in under five minutes.
 
 ### Prerequisites
-*   Node.js (v18+)
+*   Node.js (v18 or higher)
 *   npm or yarn
+*   A local Python 3.10+ environment (for the Noggimigo module)
 
 ### Installation
 ```bash
-# Clone repository
-git clone https://github.com/FolatheDuckofDuckingburg/Noggin
+# Clone the repository
+git clone https://github.com
 
-# Enter folder
+# Enter the project directory
 cd Noggin
 
-# Install dependencies
+# Install production dependencies
 npm install
 
-# Start local server
+# Spin up the local development server
 npm run dev
 ```
 
@@ -85,13 +92,13 @@ npm run dev
 
 ## 🤝 Join the Mission
 
-We actively need developers, instructional designers, and special education teachers.
+We are actively seeking developers, instructional designers, and special education teachers to expand Noggin's impact.
 
-*   💡 **Teachers:** Suggest features or request lesson templates via GitHub Issues.
-*   💻 **Developers:** Check our active codebase repository tags for accessibility-focused bugs.
+*   💡 **Teachers & Educators:** Request specific lesson templates, suggest interface enhancements, or flag gaps via our GitHub Issues tracker.
+*   💻 **Open Source Developers:** Look through our codebase repository tags for bugs, Tailwind configuration refinements, or Supabase schema optimizations.
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for details.
+Distributed entirely under the MIT License. See `LICENSE` for the complete legal text.
