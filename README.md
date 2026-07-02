@@ -31,6 +31,12 @@ Unlike standard conversational models that hand out answers, Noggimigo acts as a
 
 ---
 
+## 🧠 Introducing Noggin IEP Goal Tracker
+The **Noggin IEP Goal Tracker** is a new, native extension of the Noggin platform. It bridges the gap between daily student learning and administrative compliance. It eliminates manual data entry. Special education teachers can now track Individualized Education Program (IEP) goals automatically as students interact with our adaptive learning interface.
+
+---
+
+
 ## 🛠️ Production Tech Stack
 
 Noggin is built using a modern, scalable, and highly performant split architecture:
@@ -39,7 +45,7 @@ Noggin is built using a modern, scalable, and highly performant split architectu
 | :--- | :--- | :--- |
 | **Frontend & App Interface** | Next.js (React) + TypeScript | Handles lightning-fast, reactive state modifications and dynamic UI shifts. |
 | **Database & Auth Engine** | Supabase / PostgreSQL | Structured relational schema logging student baselines and active `PerformanceLogs`. |
-| **AI Orchestration Layer** | Python Serverless Scripts | Low-cost, highly optimized prompt mechanics powering Noggimigo's custom tuning logic. |
+| **AI Orchestration Layer** | Python Serverless Scripts and InvokeLLM | Low-cost, highly optimized prompt mechanics powering Noggimigo's custom tuning logic. |
 
 ---
 
@@ -47,7 +53,7 @@ Noggin is built using a modern, scalable, and highly performant split architectu
 
 *   🔒 **AI Assessment Gatekeeper:** A mandatory onboarding evaluation game that maps student baselines across speed, input accuracy, and error types before unlocking core content.
 *   📈 **True Adaptive Pacing:** Automated micro-difficulty adjustments that scale based on live input tracking, response velocity, and error patterns.
-*   🚫 **Zero Sensory Overload:** Fluid interface layout transforms that actively minimize cognitive strain, strip complex hovering actions, and completely eliminate flashing animations.
+*   🚫 **Zero Sensory Overload:** Fluid interface layout transforms that actively minimize cognitive strain, strip complex hovering actions, and eliminate flashing animations.
 *   ♿ **WCAG-Compliant Engineering:** Native integration for high-contrast color matrices, screen-reader accessibility hooks, and single-tap text-to-speech toggles.
 *   📱 **Touchscreen Optimized Layouts:** Large interactive click and touch targets (minimum 80px) designed natively to accommodate motor challenges on standard classroom tablets.
 
