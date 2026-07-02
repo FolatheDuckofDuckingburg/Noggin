@@ -2,15 +2,13 @@
 
 > **Learning that Adapts to You**
 
-[![GitHub license](https://shields.io)](https://github.com/FolatheDuckofDuckingburg/Noggin)
-[![GitHub stars](https://shields.io)](https://github.com/FolatheDuckofDuckingburg/Noggin)
-[![Sponsor Noggin](https://shields.io)](https://github.com/FolatheDuckofDuckingburg/Noggin)
+<img width="1280" height="640" alt="Untitled design" src="https://github.com/user-attachments/assets/d9de5745-0a74-440e-9879-cf30bb36752a" />
 
 Traditional EdTech often acts as an academic hurdle rather than a learning aid for special education students in unaccommodated settings. Without built-in accessibility, these rigid systems force neurodivergent or physically impaired learners to adapt to the software, frequently causing frustration, task abandonment, and widening performance gaps.
 
 **Noggin** is a 100% free, open-source web application built to change that. Using real-time adaptive logic and custom AI orchestration, it actively transforms interfaces and lessons to match each student's unique cognitive, sensory, and motor profiles.
 
-[🌐 Launch Live Application](https://folatheduckofduckingburg.github.io/Noggin)
+[🌐 Launch Live Application](https://noggin-org.base44.app)
 
 ---
 
@@ -82,7 +80,7 @@ Get your local development environment up and running in under five minutes.
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com
+git clone https://github.com/FolatheDuckofDuckingburg/Noggin.git
 
 # Enter the project directory
 cd Noggin
