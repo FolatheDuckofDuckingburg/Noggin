@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Activity, Zap } from "lucide-react";
 import PageShell from "@/components/PageShell";
-import { base44 } from "@/api/base44Client";
 import { BADGE_RULES } from "@/data/lessons";
 
 const SUBJECT_EMOJI = { Mathematics: "🔢", English: "📖", Science: "🔬", "Social Studies": "🌍", History: "🏛️", "Social Emotional Learning": "❤️" };
