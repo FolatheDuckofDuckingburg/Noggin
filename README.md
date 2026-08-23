@@ -1,23 +1,11 @@
-# 🧠 Noggin 
+# Noggin 🧠 - Learning that Adapts to You
 
-> **Learning that Adapts to You**
 
 <img width="1280" height="640" alt="Untitled design" src="https://github.com/user-attachments/assets/d9de5745-0a74-440e-9879-cf30bb36752a" />
 
-Traditional EdTech often acts as an academic hurdle rather than a learning aid for special education students in unaccommodated settings. Without built-in accessibility, these rigid systems force neurodivergent or physically impaired learners to adapt to the software, frequently causing frustration, task abandonment, and widening performance gaps.
-
-**Noggin** is a 100% free, open-source web application built to change that. Using real-time adaptive logic and custom AI orchestration, it actively transforms interfaces and lessons to match each student's unique cognitive, sensory, and motor profiles.
+  Noggin is an open-source AI-powered adaptive learning platform built for students with special educational needs. Utilizing an AI-driven engine built on neuroplasticity research, the system creates a personalized curriculum that adjusts difficulty and teaching styles in real time to accommodate conditions like ADHD, autism, and dyslexia. The program covers core academic subjects and social-emotional skills through game-based interactive challenges, ensuring that lessons remain engaging rather than frustrating.
 
 [🌐 Launch Live Application](https://noggin-org.base44.app)
-
----
-
-## 💖 Support Our Mission 
-
-Noggin is and always will be free for classrooms, teachers, and parents. If you believe in democratizing accessible education, you can support us in two major ways:
-
-*   🌟 **Star this repository** to help more educators and special education advocates discover us.
-*   🚀 **Sign up for Noggin Tutoring Services** *(COMING SOON)* to directly fund our mission of keeping core classroom tools free for everyone.
 
 ---
 
@@ -29,11 +17,6 @@ Unlike standard conversational models that hand out answers, Noggimigo acts as a
 
 ---
 
-## 🧠 Introducing Noggin IEP Goal Tracker
-The **Noggin IEP Goal Tracker** is a new, native extension of the Noggin platform. It bridges the gap between daily student learning and administrative compliance. It eliminates manual data entry. Special education teachers can now track Individualized Education Program (IEP) goals automatically as students interact with our adaptive learning interface.
-
----
-
 
 ## 🛠️ Production Tech Stack
 
@@ -41,9 +24,9 @@ Noggin is built using a modern, scalable, and highly performant split architectu
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Frontend & App Interface** | Next.js (React) + TypeScript | Handles lightning-fast, reactive state modifications and dynamic UI shifts. |
+| **Frontend & App Interface** | Next.js (React) + TypeScript | Creates a modern, sensory-overload-free UI for neurodivergent students. |
 | **Database & Auth Engine** | Supabase / PostgreSQL | Structured relational schema logging student baselines and active `PerformanceLogs`. |
-| **AI Orchestration Layer** | Python Serverless Scripts and InvokeLLM | Low-cost, highly optimized prompt mechanics powering Noggimigo's custom tuning logic. |
+| **AI Orchestration Layer** | Python Serverless Scripts| Low-cost, highly optimized prompt mechanics powering Noggimigo's custom tuning logic. |
 
 ---
 
@@ -62,7 +45,7 @@ Noggin is built using a modern, scalable, and highly performant split architectu
 ```text
  [1. Gatekeeper]      ➔      [2. Profiling]       ➔    [3. Database Sync]    ➔    [4. Tailored Delivery]
 Onboarding assessment       Tracks response speeds,     Metrics populate the       Lessons unlock with fully
-game maps student           input errors, and sensory   student's unique database  individualized UI styling 
+game maps student           input errors, and sensory   student's unique database  individualized learning paths
 core abilities.             triggers dynamically.       profile schema.            and dynamic AI tracking.
 ```
 
