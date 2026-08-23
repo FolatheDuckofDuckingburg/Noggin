@@ -28,8 +28,7 @@ def run_noggin_engine():
             # Clear terminal layout window dynamically for a clean look
             os.system('clear' if os.name == 'posix' else 'cls')
             print("====================================================")
-            print("    NEURAL FEEDBACK OPTIMIZATION TERMINAL
-                           by FolatheDuckofDuckingburg")
+            print("NEURAL FEEDBACK OPTIMIZATION TERMINAL by FolatheDuckofDuckingburg")
             print("====================================================")
             print(f"Host Execution: Client-Side | Precision Constraint: {SYSTEM_LATENCY*1000}ms\n")
             
