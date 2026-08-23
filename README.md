@@ -85,6 +85,13 @@ We are actively seeking developers, instructional designers, and special educati
 *   💻 **Open Source Developers:** Look through our codebase repository tags for bugs, Tailwind configuration refinements, or Supabase schema optimizations.
 
 ---
+## Contributors
+
+Thanks to all contributors:
+
+<!-- contributors:start -->
+
+<a href="https://github.com/FolatheDuckofDuckingburg"><img src="https://avatars.githubusercontent.com/u/268987568?v=4&size=48" width="48" height="48" alt="FolatheDuckofDuckingburg"></a> <a href="https://github.com/FolatheDuckofDuckingburg">
 
 ## 📄 License
 
