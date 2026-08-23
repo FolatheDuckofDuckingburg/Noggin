@@ -57,7 +57,7 @@ class NFOTEngine:
 
 class SocraticReasoningCore:
     """
-    Real Local Socratic AI Reasoning Engine (Koji-Style).
+    Real Local Socratic AI Reasoning Engine.
     Dynamically analyzes user responses, classifies error taxonomy,
     decomposes problems into micro-concepts, and generates adaptive Socratic hints.
     """
@@ -70,26 +70,26 @@ class SocraticReasoningCore:
                 "initial_node": "step_1",
                 "nodes": {
                     "step_1": {
-                        "prompt": "Imagine a circle split into 4 equal parts. You shade in 3 parts. What fraction of the circle is left UN-shaded?",
+                        "prompt": "Imagine a circle split into 4 equal parts. You shade in 3 parts. What fraction of the circle is left unshaded?",
                         "target_value": "1/4",
                         "numeric_val": 0.25,
                         "micro_scaffold": "Let's break it down: Total parts = 4. Shaded parts = 3. Subtract shaded from total!",
                         "next_node": "step_2",
                         "common_errors": {
-                            "3/4": ("INVERSION_ERROR", "3/4 is the shaded portion. We want the UN-shaded portion remaining!"),
+                            "3/4": ("INVERSION_ERROR", "3/4 is the shaded portion. We want the unshaded portion remaining!"),
                             "1/2": ("HALF_ERROR", "If you start with 4 pieces and shade 3, is exactly half left? Check the math!"),
                             "2/4": ("HALVING_ERROR", "Close, but 4 - 3 leaves 1 slice, not 2 slices!")
                         }
                     },
                     "step_2": {
-                        "prompt": "Awesome! 1/4 is remaining. Now, if we cut that 1/4 slice in half, what fraction of the WHOLE original circle is that tiny new slice?",
+                        "prompt": "Awesome! 1/4 remains. Now, if we cut that 1/4 slice in half, what fraction of the WHOLE original circle is that tiny new slice?",
                         "target_value": "1/8",
                         "numeric_val": 0.125,
                         "micro_scaffold": "Imagine cutting every slice of the original 4 in half. How many equal slices exist now?",
                         "next_node": "complete",
                         "common_errors": {
                             "1/6": ("MULTIPLY_ERROR", "Think about multiplying denominators: 4 slices times 2 halves each = ?"),
-                            "2/4": ("DOUBLING_ERROR", "Cutting a piece in half makes it smaller! Denominator gets larger."),
+                            "2/4": ("DOUBLING_ERROR", "Cutting a piece in half makes it smaller! The denominator gets larger."),
                             "1/4": ("NO_CHANGE_ERROR", "Remember, we cut the slice in half, so it becomes smaller than 1/4.")
                         }
                     }
@@ -104,7 +104,7 @@ class SocraticReasoningCore:
                         "prompt": "Solve for x: 2x + 4 = 10. What is the first operation to isolate 2x?",
                         "target_value": "subtract 4",
                         "numeric_val": 3.0,
-                        "micro_scaffold": "To undo addition of 4, we perform the inverse operation on both sides.",
+                        "micro_scaffold": "To undo the addition of 4, we perform the inverse operation on both sides.",
                         "next_node": "step_2",
                         "common_errors": {
                             "add 4": ("INVERSE_ERROR", "Adding 4 to both sides gives 2x + 8 = 14, which moves further away! Try subtracting 4."),
@@ -219,7 +219,7 @@ class SocraticReasoningCore:
 
 class NoggimigoTutorEngine:
     """
-    Noggimigo AI Tutor Engine (Real Local AI, Non-LLM).
+    Noggimigo AI Tutor Engine.
     Integrates Socratic Reasoning with NFOT Neuroadaptive Closed-Loop Feedback.
     """
     def __init__(self, active_concept: str = "fractions_intro"):
