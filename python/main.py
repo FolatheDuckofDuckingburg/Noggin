@@ -1,68 +1,69 @@
 import time
 import os
-from core.generator import SyntheticEEGStream
-from core.filter import ArtifactRejector
-from core.processor import NeuralSignalProcessor
+import sys
 
-def run_noggin_engine():
-    # Initialize zero-jitter local processing pipeline
-    stream = SyntheticEEGStream()
-    rejector = ArtifactRejector(threshold_uv=150.0)
+# Ensure root directory is in sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from python.generator import generate_brain_waves, TelemetryDataPipeline
+from python.processor import NeuralSignalProcessor, calculate_focus_score
+from noggimigo.Noggimigo import NoggimigoTutorEngine
+
+def run_noggin_engine(max_cycles: int = 3):
+    """
+    Client-side computational pipeline for Noggin AI & Neural Telemetry.
+    Ingests synthetic/hardware signals, processes NFOT metrics, and logs telemetry.
+    """
+    pipeline = TelemetryDataPipeline(log_dir="telemetry_logs")
     processor = NeuralSignalProcessor()
-   
-    SYSTEM_LATENCY = 0.040  # Local Edge Loop: 40ms
-    STIMULUS_SALIENCE = 1.0
-    ATTENTION_THRESHOLD = 2.0
-    
-    print("\033[92m[NOGGIN ENGINE] Initializing client-side computational pipeline...\033[0m")
-    time.sleep(1)
+    tutor_ai = NoggimigoTutorEngine()
 
+    SYSTEM_LATENCY = 0.040  # Local Edge Loop: 40ms
+    ATTENTION_THRESHOLD = 2.0
+
+    print("\033[92m[NOGGIN ENGINE] Initializing client-side computational pipeline...\033[0m")
+
+    cycle_count = 0
     try:
-        while True:
+        while cycle_count < max_cycles:
+            cycle_count += 1
             # 1. Telemetry Ingestion
-            raw_data = stream.get_latest_epoch()
+            brain_data = generate_brain_waves(hardware_type="synthetic")
             
-            # 2. Real-Time Artifact Rejection Loop
-            clean_data = rejector.evaluate_epoch(raw_data)
+            # 2. Validation & Processing
+            focus_metrics = calculate_focus_score(brain_data)
+            tbr = focus_metrics["tbr"]
             
-            # Clear terminal layout window dynamically for a clean look
-            os.system('clear' if os.name == 'posix' else 'cls')
-            print("====================================================")
-            print("NEURAL FEEDBACK OPTIMIZATION TERMINAL by FolatheDuckofDuckingburg")
-            print("====================================================")
-            print(f"Host Execution: Client-Side | Precision Constraint: {SYSTEM_LATENCY*1000}ms\n")
+            # 3. NFOT Feedback Loop Analysis
+            telemetry = tutor_ai.nfot.process_telemetry(latency_ms=SYSTEM_LATENCY * 1000.0, brain_data=brain_data)
             
-            if clean_data is None:
-                print("\033[91m[ARTIFACT REJECTED] |V(t)| > 150 uV. Nullifying epoch X(t) = ∅\033[0m")
-                print("Skipping corrupted frame to protect dataset purity...")
-                time.sleep(0.5)
-                continue
-                
-            # 3. Spectral Transformation via FFT
-            current_tbr = processor.calculate_tbr(clean_data)
-            
-            # 4. Inverse-Square Law Calculation: E = S / L^2
-            if current_tbr > ATTENTION_THRESHOLD:
-                # Attention drops, meaning external stimulus must scale up response
-                dynamic_efficiency = (STIMULUS_SALIENCE * 0.2) / (SYSTEM_LATENCY ** 2)
-                status_flag = "\033[93m[ATTENTION DECAY] Triggering Multimodal Feedback Reinforcement!\033[0m"
+            # 4. Pipeline Recording
+            pipeline.record_event(brain_data=brain_data, nfot_metrics=telemetry, student_action="evaluating")
+
+            if tbr > ATTENTION_THRESHOLD:
+                status_flag = "\033[93m[ATTENTION DECAY] Triggering Multimodal Scaffolding Reinforcement!\033[0m"
             else:
-                dynamic_efficiency = STIMULUS_SALIENCE / (SYSTEM_LATENCY ** 2)
-                status_flag = "\033[92m[SYNCHRONIZED] Brain states in phase-locked entrainment.\033[0m"
-                
-            # Print state machine data
-            print(f"Current Theta-to-Beta Ratio (TBR): {current_tbr:.4f}")
-            print(f"Calculated Learning Efficiency (E): {dynamic_efficiency:.2f}")
-            print(f"Pipeline State: {status_flag}\n")
+                status_flag = "\033[92m[SYNCHRONIZED] Cognitive state in high focus entrainment.\033[0m"
+
+            print("====================================================")
+            print(f"NEURAL FEEDBACK PIPELINE CYCLE #{cycle_count}")
+            print("====================================================")
+            print(f"TBR: {tbr:.3f} | Efficiency: {telemetry['efficiency']*100:.2f}% | ABETH Bias: {telemetry['abeth_bias']}")
+            print(f"State: {status_flag}")
             
-            # 5. Terminal-Based Visual Meter (Perfect for lightweight Linux environments)
-            bar_length = int(current_tbr * 10)
+            bar_length = int(tbr * 10)
             meter = "█" * min(bar_length, 40)
-            print(f"Live Brain Wave Ratio Meter: [{meter:<40}]")
+            print(f"Live Brain Wave Ratio Meter: [{meter:<40}]\n")
             
-            # Sync to processing speed loop
-            time.sleep(0.5)
-            
+            time.sleep(0.1)
+
+        # Export telemetry data
+        json_file = pipeline.export_json()
+        csv_file = pipeline.export_csv()
+        print(f"✅ Data pipeline logged {len(pipeline.buffer)} events to:")
+        print(f"   -> JSON: {json_file}")
+        print(f"   -> CSV:  {csv_file}")
+
     except KeyboardInterrupt:
         print("\n\033[93m[NOGGIN ENGINE] Local pipeline safely shut down.\033[0m")
 
