@@ -1,8 +1,13 @@
 import time
 import numpy as np
 from collections import deque
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
-from brainflow.data_filter import DataFilter, DetrendOperations, WindowOperations, FilterTypes
+
+try:
+    from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+    from brainflow.data_filter import DataFilter, DetrendOperations, WindowOperations, FilterTypes
+    HAS_BRAINFLOW = True
+except ImportError:
+    HAS_BRAINFLOW = False
 
 print("Welcome to the Neural Feedback Optimization Theory Simulator")
 
@@ -36,6 +41,22 @@ def clean_console():
         os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
+    if not HAS_BRAINFLOW:
+        print("[NFOT Engine] BrainFlow hardware shim not found in local environment.")
+        print("[NFOT Engine] Running synthetic EEG band telemetry simulation mode...")
+        alpha_history = deque(maxlen=WINDOW_SIZE)
+        current_sleep = MAX_SLEEP
+        for _ in range(5):
+            time.sleep(0.1)
+            synth_alpha = float(np.random.uniform(0.1, 0.6))
+            alpha_history.append(synth_alpha)
+            smoothed_alpha = float(np.mean(alpha_history))
+            current_sleep = calculate_continuous_gap(smoothed_alpha)
+            compression_ratio = ((MAX_SLEEP - current_sleep) / (MAX_SLEEP - MIN_SLEEP)) * 100
+            print(f"[Synthetic Stream] Alpha: {smoothed_alpha:.4f} | Sleep: {current_sleep*1000:.1f}ms | Compressed: {compression_ratio:.1f}%")
+        print("[NFOT Engine] Simulation completed successfully.")
+        return
+
     params = BrainFlowInputParams()
     board_id = BoardIds.SYNTHETIC_BOARD.value
     board = BoardShim(board_id, params)
@@ -55,7 +76,6 @@ def main():
         while True:
             time.sleep(current_sleep)
 
-            # Pull double the sample buffer size to guarantee enough data points for Welch NFFT calculation
             data = board.get_current_board_data(sampling_rate * 2)
             if data is None or data.shape[1] < nfft:
                 continue
@@ -63,16 +83,12 @@ def main():
             channel_powers = []
 
             for ch in eeg_channels:
-                # Isolate channel slice memory as a contiguous vector to prevent in-place matrix mutation
                 channel_data = np.ascontiguousarray(data[ch], dtype=np.float64)
-                
-                # Corrected Bandpass Center = 23.5Hz ((45+2)/2), Bandwidth = 43.0Hz (45-2)
                 DataFilter.perform_bandpass(
                     channel_data, sampling_rate, 23.5, 43.0, 4, FilterTypes.BUTTERWORTH.value, 0
                 )
                 DataFilter.detrend(channel_data, DetrendOperations.CONSTANT.value)
 
-                # Spectral power estimation using isolated channel data vector
                 psd = DataFilter.get_psd_welch(
                     channel_data, nfft, nfft // 2, sampling_rate, WindowOperations.BLACKMAN_HARRIS.value
                 )
@@ -81,7 +97,6 @@ def main():
                 
                 channel_powers.append(alpha_power / total_power if total_power > 0 else 0.0)
 
-            # --- Continuous NFOT State Tracking and Updates ---
             current_alpha = float(np.mean(channel_powers))
             alpha_history.append(current_alpha)
             smoothed_alpha = float(np.mean(alpha_history))
@@ -89,7 +104,6 @@ def main():
             current_sleep = calculate_continuous_gap(smoothed_alpha)
             compression_ratio = ((MAX_SLEEP - current_sleep) / (MAX_SLEEP - MIN_SLEEP)) * 100
 
-            # Diagnostic Output Rendering
             clean_console()
             print(f"--- NFOT Continuous Polling Engine Active ---")
             print(f"Smoothed Alpha Index: {smoothed_alpha:.4f}")
