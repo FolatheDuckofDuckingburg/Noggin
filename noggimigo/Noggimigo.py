@@ -421,7 +421,7 @@ class NoggimigoTutorEngine:
     def run_loop(self):
         """Interactive local terminal interface for Noggimigo AI."""
         print("====================================================")
-        print("   NOGGIMIGO AI TUTORING ENGINE (LOCAL SOCRATIC)    ")
+        print("   NOGGIMIGO AI TUTORING ENGINE     ")
         print("   Neuroadaptive Closed-Loop NFOT Architecture       ")
         print("====================================================\n")
         print("Type 'exit' to quit at any time.\n")

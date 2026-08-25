@@ -20,7 +20,7 @@ We welcome contributors of all technical skill levels. You do not need to be a s
 You are the most important part of this project because you understand what exceptional students truly need.
 *   **Share Insights:** Open a GitHub Issue to explain how a specific learning disability or sensory need can be better supported by our layout.
 *   **Request Lessons:** Suggest new types of interactive matching, sorting, or language games.
-*   **Test Usability:** Run our live app on classroom iPads or touchscreens and tell us where students get stuck.
+*   **Test Usability:** Run our live app on classroom iPads, laptops or touchscreens and tell us where students get stuck.
 
 ### 2. For UI/UX Designers & Accessibility Experts
 Our layout must minimize cognitive load and completely eliminate sensory overload.
@@ -38,7 +38,7 @@ Help us optimize our codebase architecture, state management, and database queri
 
 ## 🚀 Getting Started
 
-1.  **Explore:** Look through our active [Issues](https://github.com) to find something you want to work on.
+1.  **Explore:** Look through our active [Issues](https://github.com/FolatheDuckofDuckingburg/Noggin/issues) to find something you want to work on.
 2.  **Discuss:** Comment on the issue to let us know you are taking it on so we can avoid duplicate work.
 3.  **Submit:** Fork the repository, make your changes on a clean branch, and submit a clear Pull Request (PR) describing your improvements.
 
