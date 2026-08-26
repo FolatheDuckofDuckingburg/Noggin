@@ -18,36 +18,36 @@ export const SUBJECT_EMOJI = {
 export const DIAGNOSTIC_QUESTIONS = {
   year_1_2: {
     Mathematics: [
-      { q: "What number comes after 7?", options: ["6", "8", "9", "10"], answer: 1 },
-      { q: "What is 3 + 2?", options: ["4", "5", "6", "7"], answer: 1 },
-      { q: "Which shape has 3 sides?", options: ["Circle", "Square", "Triangle", "Star"], answer: 2 },
+      { q: "What number comes after 7?", options: ["6", "8", "9", "10"], answer: "8" },
+      { q: "What is 3 + 2?", options: ["4", "5", "6", "7"], answer: "5" },
+      { q: "Which shape has 3 sides?", options: ["Circle", "Square", "Triangle", "Star"], answer: "Triangle" },
     ],
     English: [
-      { q: "Which letter is a vowel?", options: ["B", "A", "T", "S"], answer: 1 },
-      { q: "Which word rhymes with 'hat'?", options: ["dog", "cat", "sun", "book"], answer: 1 },
-      { q: "How many sounds are in 'cat' (c-a-t)?", options: ["2", "3", "4", "1"], answer: 1 },
+      { q: "Which letter is a vowel?", options: ["B", "A", "T", "S"], answer: "A" },
+      { q: "Which word rhymes with 'hat'?", options: ["dog", "cat", "sun", "book"], answer: "cat" },
+      { q: "How many sounds are in 'cat' (c-a-t)?", options: ["2", "3", "4", "1"], answer: "3" },
     ],
     Science: [
-      { q: "Which of these is a living thing?", options: ["Rock", "Chair", "Tree", "Cloud"], answer: 2 },
-      { q: "What do plants need to grow?", options: ["Darkness", "Water", "Plastic", "Cold"], answer: 1 },
-      { q: "How many legs does a spider have?", options: ["6", "8", "4", "2"], answer: 1 },
+      { q: "Which of these is a living thing?", options: ["Rock", "Chair", "Tree", "Cloud"], answer: "Tree" },
+      { q: "What do plants need to grow?", options: ["Darkness", "Water", "Plastic", "Cold"], answer: "Water" },
+      { q: "How many legs does a spider have?", options: ["6", "8", "4", "2"], answer: "8" },
     ],
   },
   year_3_4: {
     Mathematics: [
-      { q: "What is 7 × 3?", options: ["21", "24", "18", "14"], answer: 0 },
-      { q: "What is 1/2 of 10?", options: ["2", "5", "8", "10"], answer: 1 },
-      { q: "What is 56 − 23?", options: ["33", "43", "23", "31"], answer: 0 },
+      { q: "What is 7 × 3?", options: ["21", "24", "18", "14"], answer: "21" },
+      { q: "What is 1/2 of 10?", options: ["2", "5", "8", "10"], answer: "5" },
+      { q: "What is 56 − 23?", options: ["33", "43", "23", "31"], answer: "33" },
     ],
     English: [
-      { q: "Which word is a noun?", options: ["quickly", "running", "elephant", "blue"], answer: 2 },
-      { q: "What punctuation ends a question?", options: [".", "?", "!", ","], answer: 1 },
-      { q: "The cat sat ___ the mat.", options: ["in", "on", "at", "by"], answer: 1 },
+      { q: "Which word is a noun?", options: ["quickly", "running", "elephant", "blue"], answer: "elephant" },
+      { q: "What punctuation ends a question?", options: [".", "?", "!", ","], answer: "?" },
+      { q: "The cat sat ___ the mat.", options: ["in", "on", "at", "by"], answer: "on" },
     ],
     Science: [
-      { q: "Which planet is closest to the Sun?", options: ["Venus", "Earth", "Mercury", "Mars"], answer: 2 },
-      { q: "What gas do humans breathe in?", options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Helium"], answer: 1 },
-      { q: "Which part of a plant makes food?", options: ["Roots", "Leaves", "Stem", "Flower"], answer: 1 },
+      { q: "Which planet is closest to the Sun?", options: ["Venus", "Earth", "Mercury", "Mars"], answer: "Mercury" },
+      { q: "What gas do humans breathe in?", options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Helium"], answer: "Oxygen" },
+      { q: "Which part of a plant makes food?", options: ["Roots", "Leaves", "Stem", "Flower"], answer: "Leaves" },
     ],
     "Social Studies": [
       { q: "What does a compass rose show on a map?", options: ["Distance", "Direction", "Temperature", "Time"], answer: 1 },
