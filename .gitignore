@@ -1,2 +1,26 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Python
 __pycache__/
-venv/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# Logs and OS
+*.log
+npm-debug.log*
+.DS_Store
