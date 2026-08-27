@@ -7,7 +7,8 @@ export default function NoggimigoTutor() {
     {
       id: 1,
       sender: 'bot',
-      text: "Hi there! I'm Noggimigo, your local AI tutor buddy! 🧠 What are we exploring or practicing today?",
+      text: "Hi there! I'm Noggimigo, your AI tutor! What are we exploring or practicing today?",
+      text: "Hi there! I'm Noggimigo, your AI tutor! What are we exploring or practicing today?",
     },
   ]);
   const [input, setInput] = useState('');

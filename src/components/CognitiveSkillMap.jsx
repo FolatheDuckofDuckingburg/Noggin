@@ -67,7 +67,8 @@ export default function CognitiveSkillMap({ onSkillChange = null }) {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium mt-0.5">
-              Calculated dynamically from real student gameplay performance and interactions.
+              Calculated dynamically from real student gameplay/lesson performance and interactions.
+              Calculated dynamically from real student gameplay/lesson performance and interactions.
             </p>
           </div>
         </div>
