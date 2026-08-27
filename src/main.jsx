@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
 import Games from './pages/Games';
 import ActivityFeed from './pages/ActivityFeed';
 import CommunicationBoard from './pages/CommunicationBoard';
@@ -14,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <AccessibilityProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Games />} />
+          <Route path="/" element={<Home />} />
           <Route path="/student" element={<ActivityFeed />} />
           <Route path="/games" element={<Games />} />
           <Route path="/chat" element={<NoggimigoChat />} />
