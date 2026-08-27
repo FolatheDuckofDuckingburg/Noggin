@@ -1,4 +1,4 @@
-name: Noggin Continuous Integration
+name: Noggin Continuous Integration & Automated Testing
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  build-frontend:
+  test-and-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -17,24 +17,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-        
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Verify Project Build
-        run: npm run build
-        continue-on-error: true # Prevents experimental builds from blocking the workflow
-
-  test-python-ai:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+          cache: 'npm'
 
       - name: Setup Python
-        uses: actions/setup-node@v4 # Quick setup for runner environment
-        
-      - name: Check Python Syntax
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Install Python Dependencies
         run: |
-          python -m py_compile python/*.py || true
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Vitest Frontend Test Suite
+        run: npm test
+
+      - name: Run Pytest Python AI Tutor Test Suite
+        run: pytest
+
+      - name: Build Verification
+        run: npm run build
