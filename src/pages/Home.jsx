@@ -1,20 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Sparkles,
   Brain,
-  HeartHandshake,
+  Scale,
+  Bot,
   Trophy,
-  LineChart,
+  BarChart3,
+  Atom,
   BookOpen,
+  Landmark,
+  Globe,
+  HeartHandshake,
+  Check,
+  Github,
+  Star,
+  Sparkles,
+  LineChart,
   Calculator,
   FlaskConical,
   Globe2,
   Hourglass,
   Smile,
   CheckCircle2,
-  Github,
-  Star,
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
