@@ -25,7 +25,6 @@ import {
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
-
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-blue-100 selection:text-blue-700">
